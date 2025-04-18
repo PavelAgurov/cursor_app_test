@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# TypeScript Rules
+
+## Always use TypeScript
+
+```typescript
+export const always_use_typescript = true;
+```
+
+## Strict Type Checking
+
+```typescript
+export const strict_type_checking = true;
+```
+
+## Prefer interfaces over types
+
+```typescript
+export const prefer_interfaces = true;
+```
+
+## Use explicit return types
+
+```typescript
+export const explicit_return_types = true;
+```
+
+## Ban any type
+
+```typescript
+export const ban_any_type = true;
+```
+
+## Enforce null checking
+
+```typescript
+export const strict_null_checks = true;
+```

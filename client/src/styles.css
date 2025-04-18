@@ -1,0 +1,261 @@
+/* Microsoft Office-inspired styles */
+:root {
+  --ms-blue: #2b579a;
+  --ms-blue-hover: #204072;
+  --ms-light-blue: #e5e9f5;
+  --ms-dark-blue: #1a4480;
+  --ms-red: #c8102e;
+  --ms-red-hover: #a80d26;
+  --ms-green: #107c41;
+  --ms-green-hover: #0e6937;
+  --ms-light-gray: #f3f2f1;
+  --ms-gray: #d2d0ce;
+  --ms-dark-gray: #605e5c;
+  --ms-black: #323130;
+  
+  /* Office app colors */
+  --ms-word: #2b579a;
+  --ms-excel: #217346;
+  --ms-powerpoint: #d24726;
+  --ms-outlook: #0078d4;
+  --ms-teams: #6264a7;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--ms-light-gray);
+  color: var(--ms-black);
+}
+
+.App {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.App-header {
+  background-color: white;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-top: 40px;
+  border-top: 4px solid var(--ms-blue);
+}
+
+h1 {
+  color: var(--ms-blue);
+  margin-bottom: 30px;
+  font-weight: 500;
+}
+
+h2 {
+  color: var(--ms-dark-blue);
+  font-weight: 500;
+}
+
+h3 {
+  font-weight: 500;
+  margin-top: 0;
+}
+
+/* Login Component */
+.login-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.error-message {
+  color: var(--ms-red);
+  background-color: #ffecea;
+  padding: 12px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--ms-red);
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--ms-dark-gray);
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--ms-gray);
+  border-radius: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+
+input:focus {
+  border-color: var(--ms-blue);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(43, 87, 154, 0.25);
+}
+
+button {
+  background-color: var(--ms-blue);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+button:hover {
+  background-color: var(--ms-blue-hover);
+}
+
+button:disabled {
+  background-color: var(--ms-gray);
+  color: var(--ms-dark-gray);
+  cursor: not-allowed;
+}
+
+/* Office Button */
+.office-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: 8px 16px;
+  font-weight: 500;
+  border-radius: 2px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+button[type="submit"].office-button {
+  background-color: var(--ms-green);
+}
+
+button[type="submit"].office-button:hover {
+  background-color: var(--ms-green-hover);
+}
+
+.login-help {
+  margin-top: 20px;
+  color: var(--ms-dark-gray);
+  font-size: 14px;
+  padding: 12px;
+  background-color: #f9f9f9;
+  border-radius: 2px;
+  border-left: 4px solid var(--ms-gray);
+}
+
+/* User section */
+.user-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 12px 15px;
+  background-color: var(--ms-light-blue);
+  border-radius: 2px;
+  border-left: 4px solid var(--ms-blue);
+}
+
+.user-info p {
+  margin: 0;
+  font-weight: 500;
+  color: var(--ms-dark-blue);
+}
+
+.logout-button {
+  background-color: var(--ms-red);
+  padding: 8px 16px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.logout-button:hover {
+  background-color: var(--ms-red-hover);
+}
+
+/* Hello Button */
+button[type="submit"] {
+  min-width: 100px;
+}
+
+/* Hello button container */
+.hello-button-container {
+  padding: 15px 0;
+}
+
+.hello-description {
+  color: var(--ms-dark-gray);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* Message display */
+.message {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #e6f2ea;
+  border-radius: 2px;
+  color: var(--ms-green);
+  border-left: 4px solid var(--ms-green);
+  text-align: left;
+  font-weight: 500;
+}
+
+/* Office Ribbon-like header */
+.ribbon {
+  background-color: var(--ms-blue);
+  color: white;
+  padding: 8px 0;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ribbon-title {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+}
+
+.ribbon-title h1 {
+  margin: 0;
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* Card layout */
+.card {
+  background-color: white;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ms-blue);
+  border-bottom: 1px solid var(--ms-gray);
+  padding-bottom: 10px;
+  margin-top: 0;
+  margin-bottom: 15px;
+} 
