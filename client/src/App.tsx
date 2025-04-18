@@ -1,24 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import HelloButton from './components/HelloButton';
+import ChatBot from './components/ChatBot';
+import VacationRequests from './components/VacationRequests';
 import Login from './components/Login';
 
 const App: React.FC = () => {
-  const [message, setMessage] = useState<string>('');
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>('');
+  const [showChatBot, setShowChatBot] = useState<boolean>(false);
+  const [showVacationRequests, setShowVacationRequests] = useState<boolean>(false);
 
   // Check if user is already logged in
   useEffect(() => {
-    const username = sessionStorage.getItem('username');
-    if (username) {
+    const storedUsername = sessionStorage.getItem('username');
+    if (storedUsername) {
       setIsLoggedIn(true);
+      setUsername(storedUsername);
     }
   }, []);
 
   const handleLogout = (): void => {
     sessionStorage.removeItem('username');
     setIsLoggedIn(false);
-    setMessage('');
+    setUsername('');
+    setShowChatBot(false);
+    setShowVacationRequests(false);
   };
+
+  const handleLoginSuccess = (loggedInUsername: string): void => {
+    setIsLoggedIn(true);
+    setUsername(loggedInUsername);
+  };
+
+  const isAdmin = username.toLowerCase() === 'admin';
 
   return (
     <>
@@ -35,18 +48,52 @@ const App: React.FC = () => {
           {isLoggedIn ? (
             <>
               <div className="user-info">
-                <p>Welcome, {sessionStorage.getItem('username')}!</p>
+                <p>Welcome, {username}!</p>
                 <button onClick={handleLogout} className="logout-button">Logout</button>
               </div>
               
-              <div className="card">
-                <h3 className="card-title">Hello Service</h3>
-                <HelloButton setMessage={setMessage} />
-                {message && <p className="message">{message}</p>}
-              </div>
+              {!showChatBot && !showVacationRequests && (
+                <div className="action-buttons">
+                  <div className="button-container">
+                    <div className="office-button-card" onClick={() => setShowChatBot(true)}>
+                      <div className="button-card-content">
+                        <h3>Chat bot</h3>
+                      </div>
+                    </div>
+                    
+                    {isAdmin && (
+                      <div className="office-button-card" onClick={() => setShowVacationRequests(true)}>
+                        <div className="button-card-content">
+                          <h3>Vacation requests</h3>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {showChatBot && (
+                <div className="card">
+                  <div className="card-header">
+                    <h3 className="card-title">Chat Bot</h3>
+                    <button onClick={() => setShowChatBot(false)} className="back-button">Back</button>
+                  </div>
+                  <ChatBot />
+                </div>
+              )}
+              
+              {showVacationRequests && (
+                <div className="card">
+                  <div className="card-header">
+                    <h3 className="card-title">Vacation Requests</h3>
+                    <button onClick={() => setShowVacationRequests(false)} className="back-button">Back</button>
+                  </div>
+                  <VacationRequests />
+                </div>
+              )}
             </>
           ) : (
-            <Login onLoginSuccess={() => setIsLoggedIn(true)} />
+            <Login onLoginSuccess={handleLoginSuccess} />
           )}
         </div>
       </div>

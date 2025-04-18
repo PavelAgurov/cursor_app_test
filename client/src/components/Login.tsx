@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 interface LoginProps {
-  onLoginSuccess: () => void;
+  onLoginSuccess: (username: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
@@ -21,7 +21,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       if (response.data.success) {
         // Store username in sessionStorage for simple auth state
         sessionStorage.setItem('username', username);
-        onLoginSuccess();
+        onLoginSuccess(username);
       } else {
         setError('Login failed');
       }
@@ -62,7 +62,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       </form>
       
       <div className="login-help">
-        <p>Available usernames: john, alice, bob</p>
+        <p>Available usernames: john, alice, bob, admin</p>
       </div>
     </div>
   );
