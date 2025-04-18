@@ -18,7 +18,13 @@ A simple full-stack application with React frontend and Node.js backend, both us
 │   └── tsconfig.json   # TypeScript configuration
 │
 └── backend/            # Node.js TypeScript backend
+    ├── data/           # YAML data files
+    │   ├── users.yaml             # Valid user accounts
+    │   ├── vacation-requests.yaml # Vacation request data
+    │   └── chat-responses.yaml    # Chat bot responses
     ├── src/            # Source files
+    │   ├── services/   # Data services
+    │   │   └── dataService.ts     # Service to read YAML data
     │   └── server.ts   # Express server
     ├── package.json    # Backend dependencies
     └── tsconfig.json   # TypeScript configuration
@@ -62,12 +68,15 @@ npm start
 - Node.js backend with Express and TypeScript
 - User authentication with username validation
 - Protected Hello page that requires login
-- "Hello" button that calls the backend API
+- Chat Bot with message history
+- Vacation Requests management (admin only)
+- Data stored in YAML files for easy maintenance
 - Full TypeScript integration with proper types
 
 ## Valid Usernames
 
-The application has a simple authentication system that accepts the following usernames:
+The application has a simple authentication system that accepts usernames defined in `backend/data/users.yaml`:
 - john
 - alice
-- bob 
+- bob
+- admin (has access to vacation requests) 

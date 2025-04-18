@@ -1,0 +1,21 @@
+vacation_requests:
+  - id: 1
+    employeeName: John Doe
+    startDate: 2023-06-15
+    endDate: 2023-06-22
+    status: approved
+  - id: 2
+    employeeName: Alice Smith
+    startDate: 2023-07-10
+    endDate: 2023-07-15
+    status: pending
+  - id: 3
+    employeeName: Bob Johnson
+    startDate: 2023-08-01
+    endDate: 2023-08-14
+    status: rejected
+  - id: 4
+    employeeName: Sarah Williams
+    startDate: 2023-09-05
+    endDate: 2023-09-10
+    status: pending 

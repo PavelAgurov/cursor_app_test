@@ -1,55 +1,28 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import { getUsers, getVacationRequests, getChatResponses } from './services/dataService';
 
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '5000');
 
-// Valid usernames
-const validUsers: string[] = ['john', 'alice', 'bob', 'admin'];
+// Load data from YAML files
+let validUsers: string[];
+let vacationRequests: any[];
+let chatResponses: { [key: string]: string };
 
-// Sample vacation requests data
-const vacationRequests = [
-  {
-    id: 1,
-    employeeName: 'John Doe',
-    startDate: '2023-06-15',
-    endDate: '2023-06-22',
-    status: 'approved'
-  },
-  {
-    id: 2,
-    employeeName: 'Alice Smith',
-    startDate: '2023-07-10',
-    endDate: '2023-07-15',
-    status: 'pending'
-  },
-  {
-    id: 3,
-    employeeName: 'Bob Johnson',
-    startDate: '2023-08-01',
-    endDate: '2023-08-14',
-    status: 'rejected'
-  },
-  {
-    id: 4,
-    employeeName: 'Sarah Williams',
-    startDate: '2023-09-05',
-    endDate: '2023-09-10',
-    status: 'pending'
-  }
-];
-
-// Simple chat bot responses
-const chatResponses: { [key: string]: string } = {
-  'hello': 'Hello! How can I assist you today?',
-  'hi': 'Hi there! How can I help you?',
-  'how are you': 'I\'m doing well, thank you for asking! How can I assist you?',
-  'help': 'I can help you with information about the company, vacation requests, or general inquiries. What would you like to know?',
-  'vacation': 'To request vacation time, please submit your request through the vacation request form. Admin users can view all vacation requests.',
-  'bye': 'Goodbye! Have a great day!',
-  'thank you': 'You\'re welcome! Is there anything else I can help you with?',
-  'thanks': 'You\'re welcome! Is there anything else I can help you with?'
-};
+// Initialize data
+try {
+  validUsers = getUsers();
+  vacationRequests = getVacationRequests();
+  chatResponses = getChatResponses();
+  
+  console.log('Data loaded successfully from YAML files');
+} catch (error) {
+  console.error('Error loading data:', error);
+  validUsers = ['admin']; // Fallback to at least have admin access
+  vacationRequests = [];
+  chatResponses = {};
+}
 
 // Middleware
 app.use(cors());
@@ -109,4 +82,5 @@ app.get('/api/vacation-requests', (req: Request, res: Response) => {
 // Start server
 app.listen(PORT, (): void => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Valid users: ${validUsers.join(', ')}`);
 }); 
