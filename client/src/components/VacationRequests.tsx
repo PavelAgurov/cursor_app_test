@@ -17,12 +17,27 @@ const VacationRequests: React.FC = () => {
   useEffect(() => {
     const fetchVacationRequests = async (): Promise<void> => {
       try {
-        const response = await axios.get('/api/vacation-requests');
+        // Get username from session storage
+        const username = sessionStorage.getItem('username');
+        
+        if (!username) {
+          setError('User authentication lost. Please login again.');
+          setIsLoading(false);
+          return;
+        }
+        
+        // Pass username as query parameter
+        const response = await axios.get('/api/vacation-requests', {
+          params: { username }
+        });
+        
         setRequests(response.data.requests);
         setIsLoading(false);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching vacation requests:', err);
-        setError('Failed to load vacation requests. Please try again later.');
+        const errorMessage = err.response?.data?.error || 
+                            'Failed to load vacation requests. Please try again later.';
+        setError(errorMessage);
         setIsLoading(false);
       }
     };

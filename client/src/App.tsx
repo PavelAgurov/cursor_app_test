@@ -31,7 +31,8 @@ const App: React.FC = () => {
     setUsername(loggedInUsername);
   };
 
-  const isAdmin = username.toLowerCase() === 'admin';
+  // Check if user has admin privileges
+  const isAdmin = username.toLowerCase() === 'admin' || username.toLowerCase() === 'pva';
 
   return (
     <>
