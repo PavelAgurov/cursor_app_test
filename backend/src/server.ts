@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { getUsers, getVacationRequests, addUser } from './services/dataService';
+import { getUserByUsername, getAllUsers, getVacationRequests, addUser, isUserAdmin } from './services/dataService';
 import { processChatMessage } from './services/llmService';
 
 // Load environment variables
@@ -40,11 +40,18 @@ app.post('/api/login', (req: Request, res: Response) => {
   }
   
   try {
-    // Read users directly from file each time
-    const validUsers = getUsers();
+    // Check if user exists
+    const user = getUserByUsername(username);
     
-    if (validUsers.includes(username.toLowerCase())) {
-      res.json({ success: true, message: 'Login successful' });
+    if (user) {
+      res.json({ 
+        success: true, 
+        message: 'Login successful',
+        user: {
+          username: user.username,
+          role: user.role
+        }
+      });
     } else {
       res.status(401).json({ success: false, message: 'Username does not exist' });
     }
@@ -56,30 +63,29 @@ app.post('/api/login', (req: Request, res: Response) => {
 
 // Add new user endpoint (admin only)
 app.post('/api/users', (req: Request, res: Response) => {
-  const { username, adminUsername } = req.body;
+  const { username, adminUsername, role = 'user' } = req.body;
   
   if (!username || !adminUsername) {
     return res.status(400).json({ error: 'Username and admin username are required' });
   }
   
   try {
-    // Verify admin permissions
-    const validUsers = getUsers();
-    const isAdmin = adminUsername.toLowerCase() === 'admin' || adminUsername.toLowerCase() === 'pva';
+    // Verify admin permissions using role
+    const adminUser = getUserByUsername(adminUsername);
     
-    if (!validUsers.includes(adminUsername.toLowerCase())) {
+    if (!adminUser) {
       return res.status(401).json({ error: 'Invalid admin user' });
     }
     
-    if (!isAdmin) {
+    if (adminUser.role !== 'admin') {
       return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
     }
     
-    // Add the new user
-    const result = addUser(username);
+    // Add the new user with specified role
+    const result = addUser(username, role as 'admin' | 'user');
     
     if (result) {
-      res.status(201).json({ success: true, message: `User ${username} added successfully` });
+      res.status(201).json({ success: true, message: `User ${username} added successfully with role ${role}` });
     } else {
       res.status(409).json({ success: false, message: `User ${username} already exists` });
     }
@@ -121,21 +127,45 @@ app.get('/api/vacation-requests', (req: Request, res: Response) => {
   }
   
   try {
-    // Read users directly from file to check if admin
-    const validUsers = getUsers();
-    const isAdmin = username.toLowerCase() === 'admin' || username.toLowerCase() === 'pva';
+    // Check if user exists
+    const user = getUserByUsername(username);
     
-    if (!validUsers.includes(username.toLowerCase())) {
+    if (!user) {
       return res.status(401).json({ error: 'Invalid user' });
     }
     
-    if (!isAdmin) {
+    // Check admin role instead of specific usernames
+    if (user.role !== 'admin') {
       return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
     }
     
     res.json({ requests: vacationRequests });
   } catch (error) {
     console.error('Error validating admin access:', error);
+    res.status(500).json({ error: 'Server error, please try again later' });
+  }
+});
+
+// Get all users endpoint (admin only)
+app.get('/api/users', (req: Request, res: Response) => {
+  // Verify if user is admin
+  const username = req.query.username as string;
+  
+  if (!username) {
+    return res.status(400).json({ error: 'Username is required' });
+  }
+  
+  try {
+    // Check if user has admin role
+    if (!isUserAdmin(username)) {
+      return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+    }
+    
+    // Return all users
+    const users = getAllUsers();
+    res.json({ users });
+  } catch (error) {
+    console.error('Error retrieving users:', error);
     res.status(500).json({ error: 'Server error, please try again later' });
   }
 });

@@ -1,6 +1,11 @@
 users:
-  - john
-  - alice
-  - bob
-  - admin 
-  - pva1
+  - username: john
+    role: user
+  - username: alice
+    role: user
+  - username: bob
+    role: user
+  - username: admin
+    role: admin
+  - username: pva
+    role: admin

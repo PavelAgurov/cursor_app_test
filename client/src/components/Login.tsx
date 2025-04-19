@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+interface UserData {
+  username: string;
+  role: string;
+}
+
 interface LoginProps {
-  onLoginSuccess: (username: string) => void;
+  onLoginSuccess: (userData: UserData) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
@@ -19,9 +24,11 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const response = await axios.post('/api/login', { username });
       
       if (response.data.success) {
-        // Store username in sessionStorage for simple auth state
-        sessionStorage.setItem('username', username);
-        onLoginSuccess(username);
+        // Store user data in sessionStorage for simple auth state
+        const userData: UserData = response.data.user;
+        sessionStorage.setItem('username', userData.username);
+        sessionStorage.setItem('userRole', userData.role);
+        onLoginSuccess(userData);
       } else {
         setError('Login failed');
       }

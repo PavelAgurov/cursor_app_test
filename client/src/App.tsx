@@ -3,36 +3,48 @@ import ChatBot from './components/ChatBot';
 import VacationRequests from './components/VacationRequests';
 import Login from './components/Login';
 
+interface UserData {
+  username: string;
+  role: string;
+}
+
 const App: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [username, setUsername] = useState<string>('');
+  const [userRole, setUserRole] = useState<string>('');
   const [showChatBot, setShowChatBot] = useState<boolean>(false);
   const [showVacationRequests, setShowVacationRequests] = useState<boolean>(false);
 
   // Check if user is already logged in
   useEffect(() => {
     const storedUsername = sessionStorage.getItem('username');
+    const storedRole = sessionStorage.getItem('userRole');
+    
     if (storedUsername) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
+      setUserRole(storedRole || 'user');
     }
   }, []);
 
   const handleLogout = (): void => {
     sessionStorage.removeItem('username');
+    sessionStorage.removeItem('userRole');
     setIsLoggedIn(false);
     setUsername('');
+    setUserRole('');
     setShowChatBot(false);
     setShowVacationRequests(false);
   };
 
-  const handleLoginSuccess = (loggedInUsername: string): void => {
+  const handleLoginSuccess = (userData: UserData): void => {
     setIsLoggedIn(true);
-    setUsername(loggedInUsername);
+    setUsername(userData.username);
+    setUserRole(userData.role);
   };
 
-  // Check if user has admin privileges
-  const isAdmin = username.toLowerCase() === 'admin' || username.toLowerCase() === 'pva';
+  // Check if user has admin privileges based on role
+  const isAdmin = userRole === 'admin';
 
   return (
     <>
@@ -49,7 +61,7 @@ const App: React.FC = () => {
           {isLoggedIn ? (
             <>
               <div className="user-info">
-                <p>Welcome, {username}!</p>
+                <p>Welcome, {username}! <span className="user-role">({userRole})</span></p>
                 <button onClick={handleLogout} className="logout-button">Logout</button>
               </div>
               
