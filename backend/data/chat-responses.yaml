@@ -1,9 +1,0 @@
-chat_responses:
-  hello: "Hello! How can I assist you today?"
-  hi: "Hi there! How can I help you?"
-  "how are you": "I'm doing well, thank you for asking! How can I assist you?"
-  help: "I can help you with information about the company, vacation requests, or general inquiries. What would you like to know?"
-  vacation: "To request vacation time, please submit your request through the vacation request form. Admin users can view all vacation requests."
-  bye: "Goodbye! Have a great day!"
-  "thank you": "You're welcome! Is there anything else I can help you with?"
-  thanks: "You're welcome! Is there anything else I can help you with?" 

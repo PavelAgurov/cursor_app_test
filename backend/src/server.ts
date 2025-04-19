@@ -1,24 +1,25 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { getUsers, getVacationRequests, getChatResponses, addUser } from './services/dataService';
+import dotenv from 'dotenv';
+import { getUsers, getVacationRequests, addUser } from './services/dataService';
+import { processChatMessage } from './services/llmService';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '5000');
 
-// Load vacation requests and chat responses data
+// Load vacation requests data
 let vacationRequests: any[];
-let chatResponses: { [key: string]: string };
 
 // Initialize data
 try {
   vacationRequests = getVacationRequests();
-  chatResponses = getChatResponses();
-  
-  console.log('Data loaded successfully from YAML files');
+  console.log('Vacation requests data loaded successfully');
 } catch (error) {
-  console.error('Error loading data:', error);
+  console.error('Error loading vacation data:', error);
   vacationRequests = [];
-  chatResponses = {};
 }
 
 // Middleware
@@ -88,30 +89,26 @@ app.post('/api/users', (req: Request, res: Response) => {
   }
 });
 
-// Chat bot endpoint
-app.post('/api/chat', (req: Request, res: Response) => {
+// Chat bot endpoint with LLM integration
+app.post('/api/chat', async (req: Request, res: Response) => {
   const { message } = req.body;
   
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
-  // Process the message
-  const lowerCaseMessage = message.toLowerCase();
-  let response = 'I\'m not sure how to respond to that. Can you try asking something else?';
-  
-  // Check for keywords in the message
-  for (const keyword in chatResponses) {
-    if (lowerCaseMessage.includes(keyword)) {
-      response = chatResponses[keyword];
-      break;
-    }
-  }
-  
-  // Add a slight delay to simulate processing
-  setTimeout(() => {
+  try {
+    // Process the message using LLM
+    const response = await processChatMessage(message);
+    
+    // Return the LLM response
     res.json({ message: response });
-  }, 500);
+  } catch (error) {
+    console.error('Error processing chat message:', error);
+    res.status(500).json({ 
+      message: 'Sorry, I encountered an error. Please try again later.' 
+    });
+  }
 });
 
 // Vacation requests endpoint (only accessible to admin)

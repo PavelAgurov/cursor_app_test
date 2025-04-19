@@ -80,13 +80,4 @@ export function addUser(username: string): boolean {
 export function getVacationRequests(): VacationRequest[] {
   const data = readYamlFile<{ vacation_requests: VacationRequest[] }>('vacation-requests.yaml');
   return data.vacation_requests;
-}
-
-/**
- * Gets the chat responses mapping
- * @returns Object mapping keywords to responses
- */
-export function getChatResponses(): { [key: string]: string } {
-  const data = readYamlFile<{ chat_responses: { [key: string]: string } }>('chat-responses.yaml');
-  return data.chat_responses;
 } 
