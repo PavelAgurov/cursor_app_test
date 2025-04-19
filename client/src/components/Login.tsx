@@ -34,7 +34,12 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
   return (
     <div className="login-container">
-      <h3 className="card-title">Sign In</h3>
+      <h3 className="card-title">Sign in to Employee Portal</h3>
+      
+      <div className="login-intro">
+        <p>Experience the joy of taking part in our community.</p>
+      </div>
+      
       {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit}>
@@ -62,7 +67,7 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       </form>
       
       <div className="login-help">
-        <p>Available usernames: john, alice, bob, admin</p>
+        <p>Available usernames: john, alice, bob, admin, pva</p>
       </div>
     </div>
   );

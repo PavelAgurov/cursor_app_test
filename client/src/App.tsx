@@ -38,13 +38,13 @@ const App: React.FC = () => {
     <>
       <div className="ribbon">
         <div className="ribbon-title">
-          <h1>TypeScript Office App</h1>
+          <h1>Employee Portal</h1>
         </div>
       </div>
       
       <div className="App">
         <div className="card">
-          <h2 className="card-title">Welcome to TypeScript Office App</h2>
+          <h2 className="card-title">Hello, welcome to the portal</h2>
           
           {isLoggedIn ? (
             <>

@@ -1,32 +1,43 @@
-/* Microsoft Office-inspired styles */
+/* Odido brand inspired styles */
 :root {
-  --ms-blue: #2b579a;
-  --ms-blue-hover: #204072;
-  --ms-light-blue: #e5e9f5;
-  --ms-dark-blue: #1a4480;
-  --ms-red: #c8102e;
-  --ms-red-hover: #a80d26;
-  --ms-green: #107c41;
-  --ms-green-hover: #0e6937;
-  --ms-light-gray: #f3f2f1;
-  --ms-gray: #d2d0ce;
-  --ms-dark-gray: #605e5c;
-  --ms-black: #323130;
+  /* Odido brand colors */
+  --odido-black: #000000;
+  --odido-white: #ffffff;
+  --odido-pink: #ff3f7f;
+  --odido-purple: #9747ff;
+  --odido-blue: #4285f4;
+  --odido-green: #00b884;
+  --odido-yellow: #ffde59;
+  --odido-orange: #ff9100;
   
-  /* Office app colors */
-  --ms-word: #2b579a;
-  --ms-excel: #217346;
-  --ms-powerpoint: #d24726;
-  --ms-outlook: #0078d4;
-  --ms-teams: #6264a7;
+  /* UI colors */
+  --ui-light-gray: #f3f2f1;
+  --ui-gray: #d2d0ce;
+  --ui-dark-gray: #605e5c;
+  --ui-error: #d13438;
+  --ui-success: #107c41;
+  --ui-warning: #ff8c00;
+
+  /* Typography */
+  --font-primary: 'Open Sans', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--font-primary);
   margin: 0;
   padding: 0;
-  background-color: var(--ms-light-gray);
-  color: var(--ms-black);
+  background-color: var(--odido-white);
+  color: var(--odido-black);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .App {
@@ -36,29 +47,28 @@ body {
   padding: 20px;
 }
 
-.App-header {
-  background-color: white;
-  border-radius: 3px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  margin-top: 40px;
-  border-top: 4px solid var(--ms-blue);
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-primary);
+  margin-top: 0;
 }
 
 h1 {
-  color: var(--ms-blue);
+  color: var(--odido-black);
   margin-bottom: 30px;
-  font-weight: 500;
+  font-weight: 700;
+  font-size: var(--font-size-xl);
 }
 
 h2 {
-  color: var(--ms-dark-blue);
-  font-weight: 500;
+  color: var(--odido-black);
+  font-weight: 600;
+  font-size: var(--font-size-lg);
 }
 
 h3 {
-  font-weight: 500;
+  font-weight: 600;
   margin-top: 0;
+  font-size: var(--font-size-md);
 }
 
 /* Login Component */
@@ -68,13 +78,25 @@ h3 {
   padding: 20px;
 }
 
+.login-intro {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.login-intro p {
+  color: var(--ui-dark-gray);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+}
+
 .error-message {
-  color: var(--ms-red);
+  color: var(--ui-error);
   background-color: #ffecea;
   padding: 12px;
   border-radius: 2px;
   margin-bottom: 20px;
-  border-left: 4px solid var(--ms-red);
+  border-left: 4px solid var(--ui-error);
+  font-size: var(--font-size-sm);
 }
 
 .form-group {
@@ -85,46 +107,59 @@ h3 {
 label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
-  color: var(--ms-dark-gray);
+  font-weight: 600;
+  color: var(--odido-black);
+  font-size: var(--font-size-sm);
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--ms-gray);
+  padding: 12px;
+  border: 1px solid var(--ui-gray);
   border-radius: 2px;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   line-height: 1.5;
   box-sizing: border-box;
+  font-family: var(--font-primary);
 }
 
 input:focus {
-  border-color: var(--ms-blue);
+  border-color: var(--odido-pink);
   outline: none;
-  box-shadow: 0 0 0 2px rgba(43, 87, 154, 0.25);
+  box-shadow: 0 0 0 2px rgba(255, 63, 127, 0.25);
 }
 
 button {
-  background-color: var(--ms-blue);
+  background-color: var(--odido-pink);
   color: white;
   border: none;
-  padding: 10px 20px;
-  font-size: 14px;
-  border-radius: 2px;
+  padding: 12px 24px;
+  font-size: var(--font-size-sm);
+  border-radius: 30px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  font-weight: 500;
+  transition: all 0.2s;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  letter-spacing: 0.3px;
 }
 
 button:hover {
-  background-color: var(--ms-blue-hover);
+  background-color: #e03570;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 button:disabled {
-  background-color: var(--ms-gray);
-  color: var(--ms-dark-gray);
+  background-color: var(--ui-gray);
+  color: var(--ui-dark-gray);
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Office Button */
@@ -133,31 +168,31 @@ button:disabled {
   align-items: center;
   justify-content: center;
   min-width: 120px;
-  padding: 8px 16px;
-  font-weight: 500;
-  border-radius: 2px;
-  letter-spacing: 0.2px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 30px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: var(--font-size-xs);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 button[type="submit"].office-button {
-  background-color: var(--ms-green);
+  background-color: var(--odido-pink);
 }
 
 button[type="submit"].office-button:hover {
-  background-color: var(--ms-green-hover);
+  background-color: #e03570;
 }
 
 .login-help {
   margin-top: 20px;
-  color: var(--ms-dark-gray);
-  font-size: 14px;
+  color: var(--ui-dark-gray);
+  font-size: var(--font-size-xs);
   padding: 12px;
   background-color: #f9f9f9;
   border-radius: 2px;
-  border-left: 4px solid var(--ms-gray);
+  border-left: 4px solid var(--ui-gray);
 }
 
 /* User section */
@@ -167,32 +202,27 @@ button[type="submit"].office-button:hover {
   align-items: center;
   margin-bottom: 20px;
   padding: 12px 15px;
-  background-color: var(--ms-light-blue);
-  border-radius: 2px;
-  border-left: 4px solid var(--ms-blue);
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  border: 1px solid var(--ui-gray);
 }
 
 .user-info p {
   margin: 0;
-  font-weight: 500;
-  color: var(--ms-dark-blue);
+  font-weight: 600;
+  color: var(--odido-black);
 }
 
 .logout-button {
-  background-color: var(--ms-red);
+  background-color: var(--odido-purple);
   padding: 8px 16px;
-  font-size: 13px;
+  font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.2px;
 }
 
 .logout-button:hover {
-  background-color: var(--ms-red-hover);
-}
-
-/* Hello Button */
-button[type="submit"] {
-  min-width: 100px;
+  background-color: #8138e2;
 }
 
 /* Hello button container */
@@ -201,9 +231,9 @@ button[type="submit"] {
 }
 
 .hello-description {
-  color: var(--ms-dark-gray);
+  color: var(--ui-dark-gray);
   margin-bottom: 20px;
-  font-size: 14px;
+  font-size: var(--font-size-sm);
 }
 
 /* Message display */
@@ -211,20 +241,20 @@ button[type="submit"] {
   margin-top: 20px;
   padding: 15px;
   background-color: #e6f2ea;
-  border-radius: 2px;
-  color: var(--ms-green);
-  border-left: 4px solid var(--ms-green);
+  border-radius: 4px;
+  color: var(--ui-success);
+  border-left: 4px solid var(--ui-success);
   text-align: left;
   font-weight: 500;
+  font-size: var(--font-size-sm);
 }
 
-/* Office Ribbon-like header */
+/* Odido Ribbon-like header */
 .ribbon {
-  background-color: var(--ms-blue);
+  background-color: var(--odido-black);
   color: white;
-  padding: 8px 0;
+  padding: 14px 0;
   margin-bottom: 30px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .ribbon-title {
@@ -238,26 +268,29 @@ button[type="submit"] {
 .ribbon-title h1 {
   margin: 0;
   color: white;
-  font-size: 1.2rem;
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 /* Card layout */
 .card {
   background-color: white;
-  border-radius: 2px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   padding: 20px;
   margin-bottom: 20px;
+  border: 1px solid #eaeaea;
 }
 
 .card-title {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--ms-blue);
-  border-bottom: 1px solid var(--ms-gray);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--odido-black);
   padding-bottom: 10px;
   margin-top: 0;
   margin-bottom: 15px;
+  border-bottom: 1px solid #eaeaea;
 }
 
 /* Card header with back button */
@@ -266,7 +299,7 @@ button[type="submit"] {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  border-bottom: 1px solid var(--ms-gray);
+  border-bottom: 1px solid #eaeaea;
   padding-bottom: 10px;
 }
 
@@ -277,18 +310,17 @@ button[type="submit"] {
 }
 
 .back-button {
-  background-color: var(--ms-light-gray);
-  color: var(--ms-dark-gray);
-  font-size: 12px;
+  background-color: #f5f5f5;
+  color: var(--odido-black);
+  font-size: var(--font-size-xs);
   padding: 6px 12px;
-  border-radius: 2px;
+  border-radius: 30px;
   box-shadow: none;
   text-transform: uppercase;
 }
 
 .back-button:hover {
-  background-color: var(--ms-gray);
-  color: var(--ms-black);
+  background-color: #e8e8e8;
 }
 
 /* Action buttons grid */
@@ -306,34 +338,43 @@ button[type="submit"] {
 .office-button-card {
   width: 180px;
   height: 180px;
-  background-color: var(--ms-light-blue);
-  border-radius: 2px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   position: relative;
-  border: 1px solid #d1d8e6;
+  overflow: hidden;
+}
+
+.office-button-card:first-child {
+  background: linear-gradient(135deg, var(--odido-pink) 0%, var(--odido-purple) 100%);
+}
+
+.office-button-card:nth-child(2) {
+  background: linear-gradient(135deg, var(--odido-blue) 0%, var(--odido-green) 100%);
 }
 
 .office-button-card:hover {
-  background-color: #dbe2f0;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .button-card-content {
   text-align: center;
   padding: 15px;
+  z-index: 1;
 }
 
 .button-card-content h3 {
-  color: var(--ms-blue);
-  font-size: 18px;
-  font-weight: 500;
+  color: white;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
   margin: 0 0 10px 0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.3px;
 }
 
 /* Chat component */
@@ -342,8 +383,9 @@ button[type="submit"] {
   flex-direction: column;
   height: 400px;
   background-color: white;
-  border: 1px solid var(--ms-gray);
-  border-radius: 2px;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .chat-messages {
@@ -353,16 +395,17 @@ button[type="submit"] {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background-color: #f5f5f5;
+  background-color: #f8f8f8;
 }
 
 .message {
   max-width: 80%;
-  padding: 10px 15px;
-  border-radius: 5px;
+  padding: 12px 16px;
   position: relative;
   margin: 5px 0;
   animation: fadeIn 0.3s;
+  border-left: none;
+  font-size: var(--font-size-sm);
 }
 
 @keyframes fadeIn {
@@ -372,20 +415,21 @@ button[type="submit"] {
 
 .user-message {
   align-self: flex-end;
-  background-color: var(--ms-blue);
+  background-color: var(--odido-pink);
   color: white;
-  border-radius: 15px 15px 0 15px;
+  border-radius: 18px 18px 0 18px;
   margin-left: 20%;
 }
 
 .bot-message {
   align-self: flex-start;
   background-color: white;
-  color: var(--ms-black);
-  border-radius: 15px 15px 15px 0;
-  border: 1px solid var(--ms-gray);
+  color: var(--odido-black);
+  border-radius: 18px 18px 18px 0;
+  border: 1px solid #eaeaea;
   margin-right: 20%;
   margin-top: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .message-content {
@@ -394,11 +438,11 @@ button[type="submit"] {
 
 .message-content p {
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .message-timestamp {
-  font-size: 10px;
+  font-size: var(--font-size-xs);
   opacity: 0.8;
   margin-top: 5px;
   text-align: right;
@@ -406,35 +450,45 @@ button[type="submit"] {
 
 .message-form {
   display: flex;
-  border-top: 1px solid var(--ms-gray);
-  padding: 10px;
+  border-top: 1px solid #eaeaea;
+  padding: 12px;
   background-color: white;
 }
 
 .message-form input {
   flex: 1;
-  border: 1px solid var(--ms-gray);
-  padding: 8px 12px;
-  border-radius: 20px;
+  border: 1px solid #eaeaea;
+  padding: 10px 15px;
+  border-radius: 25px;
   margin-right: 10px;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-primary);
+}
+
+.message-form input:focus {
+  border-color: var(--odido-pink);
+  box-shadow: 0 0 0 2px rgba(255, 63, 127, 0.1);
 }
 
 .send-button {
-  background-color: var(--ms-blue);
+  background-color: var(--odido-pink);
   color: white;
   border: none;
-  border-radius: 20px;
+  border-radius: 25px;
   padding: 8px 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  min-width: 80px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .send-button:hover {
-  background-color: var(--ms-blue-hover);
+  background-color: #e03570;
 }
 
 .send-button:disabled {
-  background-color: var(--ms-gray);
+  background-color: var(--ui-gray);
   cursor: not-allowed;
 }
 
@@ -445,6 +499,7 @@ button[type="submit"] {
   justify-content: center;
   margin: 0;
   padding: 0 15px;
+  height: 24px;
 }
 
 .typing-indicator span {
@@ -452,7 +507,7 @@ button[type="submit"] {
   width: 8px;
   float: left;
   margin: 0 1px;
-  background-color: var(--ms-gray);
+  background-color: var(--odido-pink);
   display: block;
   border-radius: 50%;
   opacity: 0.4;
@@ -485,64 +540,70 @@ button[type="submit"] {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: var(--font-size-sm);
 }
 
 .requests-table th {
-  background-color: var(--ms-light-blue);
-  color: var(--ms-dark-blue);
-  font-weight: 500;
+  background-color: var(--odido-black);
+  color: white;
+  font-weight: 600;
   text-align: left;
   padding: 12px 15px;
-  border-bottom: 2px solid var(--ms-blue);
 }
 
 .requests-table td {
-  padding: 10px 15px;
-  border-bottom: 1px solid var(--ms-gray);
-  color: var(--ms-black);
+  padding: 12px 15px;
+  border-bottom: 1px solid #eaeaea;
+  color: var(--odido-black);
 }
 
 .requests-table tr:hover {
-  background-color: var(--ms-light-gray);
+  background-color: #f8f8f8;
 }
 
 .status-badge {
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: var(--font-size-xs);
   text-transform: capitalize;
   display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.2px;
 }
 
 .status-approved {
   background-color: #e6f4ea;
-  color: var(--ms-green);
+  color: var(--odido-green);
   border: 1px solid #c6e7d4;
 }
 
 .status-rejected {
   background-color: #fce8e6;
-  color: var(--ms-red);
+  color: var(--odido-pink);
   border: 1px solid #f8dad6;
 }
 
 .status-pending {
   background-color: #fff7e0;
-  color: #eb8909;
+  color: var(--odido-orange);
   border: 1px solid #feefc3;
 }
 
 .no-requests {
   padding: 30px;
   text-align: center;
-  color: var(--ms-dark-gray);
-  background-color: var(--ms-light-gray);
-  border-radius: 2px;
+  color: var(--ui-dark-gray);
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  font-size: var(--font-size-sm);
 }
 
 .loading-spinner {
   padding: 30px;
   text-align: center;
-  color: var(--ms-dark-gray);
+  color: var(--ui-dark-gray);
+  font-size: var(--font-size-sm);
 } 
