@@ -55,10 +55,19 @@ const modelWithTools = model.bind({
  */
 export async function processChatMessage(message: string, username: string = 'anonymous'): Promise<string> {
   try {
+    // Get current date in a readable format
+    const currentDate = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    
     // Format the prompt
     const formattedPromptWithTools = await promptTemplateWithTools.invoke({
       input: message,
-      name: username
+      name: username,
+      current_date: currentDate
     });
 
     console.log(`processChatMessage from ${username}: ${message}`);
@@ -102,7 +111,8 @@ export async function processChatMessage(message: string, username: string = 'an
       const formattedPromptRAG = await promptTemplateRAG.invoke({
         input: message,
         documents: toolResponse,
-        name: username
+        name: username,
+        current_date: currentDate
       });
 
       const responseRAG = await model.invoke(formattedPromptRAG);
