@@ -17,8 +17,11 @@ You have access to two tools:
    - infoType: Must be one of the following values:
      * "vacation_days" - When asking about available vacation days
    
-   The system will automatically identify if they're asking about themselves or someone else
-   and format the response appropriately.
+   IMPORTANT ACCESS CONTROL RULES:
+   - Regular users can ONLY access their own personal information
+   - Admin users can access information about any user
+   - The system will automatically enforce these permissions
+   - When a user asks about someone else's information, still make the request but the system will handle permission checks
 
 User name: {name}
 

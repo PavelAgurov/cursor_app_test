@@ -3,6 +3,7 @@ import { DynamicStructuredTool } from "@langchain/core/tools";
 import fs from 'fs';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
+import { getUserByUsername } from '../dataService';
 
 // Define an enum for the supported information types
 enum InfoType {
@@ -12,6 +13,37 @@ enum InfoType {
 interface UserVacationData {
   username: string;
   vacation_days: number;
+}
+
+/**
+ * Check if a user has admin privileges
+ * @param username The username to check
+ * @returns True if the user is an admin, false otherwise
+ */
+function isUserAdmin(username: string): boolean {
+  try {
+    const user = getUserByUsername(username);
+    return user?.role === 'admin';
+  } catch (error) {
+    console.error(`Error checking admin status for user ${username}:`, error);
+    return false;
+  }
+}
+
+/**
+ * Check if a user is authorized to view another user's information
+ * @param currentUser The user making the request
+ * @param targetUser The user whose information is being requested
+ * @returns True if access is allowed, false otherwise
+ */
+function isAuthorizedToView(currentUser: string, targetUser: string): boolean {
+  // Users can always view their own information
+  if (currentUser.toLowerCase() === targetUser.toLowerCase()) {
+    return true;
+  }
+  
+  // Only admins can view other users' information
+  return isUserAdmin(currentUser);
 }
 
 /**
@@ -68,7 +100,6 @@ export function createPersonalInfoTool() {
     name: "personal_info_query",
     description: `
       Use this tool when a user asks about their personal information like vacation days, etc.
-      User can ask information about another person.
     `,
     schema: z.object({
       username: z.string().describe("The username of the person requesting information"),
@@ -79,6 +110,11 @@ export function createPersonalInfoTool() {
     }),
     func: async ({ username, infoType, currentUser }) => {
       console.log(`Personal Info Tool: User ${currentUser} requested ${infoType} for ${username}`);
+      
+      // Check if the current user is authorized to view the requested information
+      if (!isAuthorizedToView(currentUser, username)) {
+        return `Access denied. You do not have permission to view ${username}'s information.`;
+      }
       
       switch (infoType) {
         case InfoType.VACATION_DAYS:
