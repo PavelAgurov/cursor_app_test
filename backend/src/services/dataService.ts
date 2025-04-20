@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
+import { getAllVacationRequests as getVacationRequestsFromFile } from './tools/vacationRequestTool';
 
 const DATA_DIR = path.join(__dirname, '../../data');
 
@@ -103,10 +104,10 @@ export function isUserAdmin(username: string): boolean {
 }
 
 /**
- * Gets the list of vacation requests
+ * Gets the list of vacation requests directly from the file
  * @returns Array of vacation requests
  */
 export function getVacationRequests(): VacationRequest[] {
-  const data = readYamlFile<{ vacation_requests: VacationRequest[] }>('vacation-requests.yaml');
-  return data.vacation_requests;
+  // Get vacation requests directly from the file each time
+  return getVacationRequestsFromFile();
 } 

@@ -10,17 +10,8 @@ dotenv.config();
 const app = express();
 const PORT: number = parseInt(process.env.PORT || '5000');
 
-// Load vacation requests data
-let vacationRequests: any[];
-
-// Initialize data
-try {
-  vacationRequests = getVacationRequests();
-  console.log('Vacation requests data loaded successfully');
-} catch (error) {
-  console.error('Error loading vacation data:', error);
-  vacationRequests = [];
-}
+// Log that we're ready to handle requests
+console.log('Ready to handle requests, including vacation requests');
 
 // Middleware
 app.use(cors());
@@ -139,6 +130,8 @@ app.get('/api/vacation-requests', (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
     }
     
+    // Get vacation requests directly from the file
+    const vacationRequests = getVacationRequests();
     res.json({ requests: vacationRequests });
   } catch (error) {
     console.error('Error validating admin access:', error);

@@ -1,6 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { createHRPolicyTool } from "./tools/hrPolicyTool";
 import { createPersonalInfoTool } from "./tools/personalInfoTool";
+import { createVacationRequestTool } from "./tools/vacationRequestTool";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import dotenv from 'dotenv';
 import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG } from "./prompt/prompts";
@@ -35,7 +36,8 @@ function initChatModel() {
 const model = initChatModel();
 const hrPolicyTool = createHRPolicyTool();
 const personalInfoTool = createPersonalInfoTool();
-const tools = [hrPolicyTool, personalInfoTool];
+const vacationRequestTool = createVacationRequestTool();
+const tools = [hrPolicyTool, personalInfoTool, vacationRequestTool];
 
 // Create a prompt templates
 const promptTemplateWithTools = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_WITH_TOOLS);
@@ -100,6 +102,21 @@ export async function processChatMessage(message: string, username: string = 'an
         currentUser: username
       });
       console.log(`Personal info tool response: ${toolResponse}`);
+      return toolResponse;
+    }
+    
+    // Handle vacation request tool
+    if (toolCall.name === "submit_vacation_request") {
+      const toolArgs = toolCall.args;
+      const toolResponse = await vacationRequestTool.invoke({
+        username: toolArgs.username || username,
+        startDate: toolArgs.startDate,
+        endDate: toolArgs.endDate,
+        duration: toolArgs.duration,
+        durationUnit: toolArgs.durationUnit,
+        currentUser: username
+      });
+      console.log(`Vacation request tool response: ${toolResponse}`);
       return toolResponse;
     }
     

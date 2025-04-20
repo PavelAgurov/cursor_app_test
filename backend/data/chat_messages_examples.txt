@@ -5,3 +5,8 @@ Should I sign NDA?
 
 How many vacation days user Alice has?
 
+Create vacation for 5 days
+Create vacation for 5 days from tomorrow
+Create vacation for Alice for 5 days from tomorrow
+
+
