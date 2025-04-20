@@ -69,30 +69,32 @@ const VacationRequests: React.FC = () => {
       {requests.length === 0 ? (
         <div className="no-requests">No vacation requests found.</div>
       ) : (
-        <table className="requests-table">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((request) => (
-              <tr key={request.id}>
-                <td>{request.employeeName}</td>
-                <td>{new Date(request.startDate).toLocaleDateString()}</td>
-                <td>{new Date(request.endDate).toLocaleDateString()}</td>
-                <td>
-                  <span className={`status-badge ${getStatusClass(request.status)}`}>
-                    {request.status}
-                  </span>
-                </td>
+        <div className="table-container">
+          <table className="requests-table">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {requests.map((request) => (
+                <tr key={request.id}>
+                  <td>{request.employeeName}</td>
+                  <td>{new Date(request.startDate).toLocaleDateString()}</td>
+                  <td>{new Date(request.endDate).toLocaleDateString()}</td>
+                  <td>
+                    <span className={`status-badge ${getStatusClass(request.status)}`}>
+                      {request.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

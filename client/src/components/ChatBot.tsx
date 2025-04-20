@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 interface Message {
@@ -12,6 +12,26 @@ const ChatBot: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [username, setUsername] = useState<string>('anonymous');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Scroll to bottom of messages
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Focus input field after messages change or loading state changes
+  useEffect(() => {
+    // Only focus if not in loading state
+    if (!isLoading) {
+      inputRef.current?.focus();
+    }
+  }, [messages, isLoading]);
 
   // Get username from session storage when component mounts
   useEffect(() => {
@@ -26,6 +46,9 @@ const ChatBot: React.FC = () => {
       isUser: false,
       timestamp: new Date()
     }]);
+    
+    // Focus input field on initial load
+    inputRef.current?.focus();
   }, []);
 
   const handleSendMessage = async (e: React.FormEvent): Promise<void> => {
@@ -100,10 +123,13 @@ const ChatBot: React.FC = () => {
             </div>
           </div>
         )}
+        {/* Empty div for scroll reference */}
+        <div ref={messagesEndRef} />
       </div>
       
       <form className="message-form" onSubmit={handleSendMessage}>
         <input
+          ref={inputRef}
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
