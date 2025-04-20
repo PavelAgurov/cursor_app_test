@@ -1,5 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { createHRPolicyTool } from "./tools/hrPolicyTool";
+import { createPersonalInfoTool } from "./tools/personalInfoTool";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import dotenv from 'dotenv';
 import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG } from "./prompt/prompts";
@@ -33,7 +34,8 @@ function initChatModel() {
 // Create the LLM and tools
 const model = initChatModel();
 const hrPolicyTool = createHRPolicyTool();
-const tools = [hrPolicyTool];
+const personalInfoTool = createPersonalInfoTool();
+const tools = [hrPolicyTool, personalInfoTool];
 
 // Create a prompt templates
 const promptTemplateWithTools = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_WITH_TOOLS);
@@ -79,19 +81,38 @@ export async function processChatMessage(message: string, username: string = 'an
     console.log(`Tool calls: ${JSON.stringify(response.tool_calls)}`);
     // If the response contains tool calls, process them
     const toolCall = response.tool_calls[0];
-    const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
-    console.log(`Tool response: ${toolResponse}`);
     
-    const formattedPromptRAG = await promptTemplateRAG.invoke({
-      input: message,
-      documents: toolResponse,
-      name: username
-    });
+    // Handle personal info query tool
+    if (toolCall.name === "personal_info_query") {
+      const toolArgs = toolCall.args;
+      const toolResponse = await personalInfoTool.invoke({ 
+        username: toolArgs.username || username, 
+        infoType: toolArgs.infoType,
+        currentUser: username
+      });
+      console.log(`Personal info tool response: ${toolResponse}`);
+      return toolResponse;
+    }
+    
+    // Handle HR policy tool
+    if (toolCall.name === "hr_policy_query") {
+      const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
+      console.log(`HR Policy tool response: ${toolResponse}`);
+      
+      const formattedPromptRAG = await promptTemplateRAG.invoke({
+        input: message,
+        documents: toolResponse,
+        name: username
+      });
 
-    const responseRAG = await model.invoke(formattedPromptRAG);
-    console.log(`RAG Response: ${responseRAG}`);
+      const responseRAG = await model.invoke(formattedPromptRAG);
+      console.log(`RAG Response: ${responseRAG}`);
 
-    return responseRAG.text;
+      return responseRAG.text;
+    }
+    
+    // If tool not recognized
+    return `I'm sorry, I'm not able to process that request right now.`;
   } catch (error) {
     console.error('Error processing message with LLM:', error);
     throw new Error('Failed to process your message. Please try again later.');
