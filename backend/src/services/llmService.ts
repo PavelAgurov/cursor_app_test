@@ -48,16 +48,18 @@ const modelWithTools = model.bind({
 /**
  * Process a chat message using LangChain and the LLM
  * @param message The user's message
+ * @param username The username of the person sending the message
  * @returns The AI response
  */
-export async function processChatMessage(message: string): Promise<string> {
+export async function processChatMessage(message: string, username: string = 'anonymous'): Promise<string> {
   try {
     // Format the prompt
     const formattedPromptWithTools = await promptTemplateWithTools.invoke({
-      input: message
+      input: message,
+      name: username
     });
 
-    console.log(`processChatMessage: ${message}`);
+    console.log(`processChatMessage from ${username}: ${message}`);
     
     // Get response from model with tools
     const response = await modelWithTools.invoke(formattedPromptWithTools);
@@ -82,7 +84,8 @@ export async function processChatMessage(message: string): Promise<string> {
     
     const formattedPromptRAG = await promptTemplateRAG.invoke({
       input: message,
-      documents: toolResponse
+      documents: toolResponse,
+      name: username
     });
 
     const responseRAG = await model.invoke(formattedPromptRAG);

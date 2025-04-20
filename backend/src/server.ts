@@ -97,15 +97,15 @@ app.post('/api/users', (req: Request, res: Response) => {
 
 // Chat bot endpoint with LLM integration
 app.post('/api/chat', async (req: Request, res: Response) => {
-  const { message } = req.body;
+  const { message, username } = req.body;
   
   if (!message) {
     return res.status(400).json({ error: 'Message is required' });
   }
 
   try {
-    // Process the message using LLM
-    const response = await processChatMessage(message);
+    // Process the message using LLM, passing the username
+    const response = await processChatMessage(message, username || 'anonymous');
     
     // Return the LLM response
     res.json({ message: response });

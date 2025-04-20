@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface Message {
@@ -8,15 +8,25 @@ interface Message {
 }
 
 const ChatBot: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      text: 'Hello! How can I help you today?',
-      isUser: false,
-      timestamp: new Date()
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [username, setUsername] = useState<string>('anonymous');
+
+  // Get username from session storage when component mounts
+  useEffect(() => {
+    const storedUsername = sessionStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
+    }
+    
+    // Set initial welcome message with username
+    setMessages([{
+      text: `Hello ${storedUsername || 'there'}! How can I help you today?`,
+      isUser: false,
+      timestamp: new Date()
+    }]);
+  }, []);
 
   const handleSendMessage = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -35,8 +45,11 @@ const ChatBot: React.FC = () => {
     setNewMessage('');
     
     try {
-      // Send message to server
-      const response = await axios.post('/api/chat', { message: newMessage });
+      // Send message to server with username
+      const response = await axios.post('/api/chat', { 
+        message: newMessage,
+        username: username
+      });
       
       // Add bot response
       const botMessage: Message = {
