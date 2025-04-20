@@ -4,6 +4,11 @@ import fs from 'fs';
 import path from 'path';
 import { parse } from 'csv-parse/sync';
 
+// Define an enum for the supported information types
+enum InfoType {
+  VACATION_DAYS = "vacation_days"
+}
+
 interface UserVacationData {
   username: string;
   vacation_days: number;
@@ -67,31 +72,33 @@ export function createPersonalInfoTool() {
     `,
     schema: z.object({
       username: z.string().describe("The username of the person requesting information"),
-      infoType: z.string().describe("The type of information requested (e.g., vacation_days)"),
+      infoType: z.enum([InfoType.VACATION_DAYS])
+        .describe(`The type of information requested. Available options: 
+          - ${InfoType.VACATION_DAYS}: Number of vacation days available`),
       currentUser: z.string().describe("The username of the current user who is making the request")
     }),
     func: async ({ username, infoType, currentUser }) => {
       console.log(`Personal Info Tool: User ${currentUser} requested ${infoType} for ${username}`);
       
-      if (infoType.toLowerCase() === 'vacation_days' || 
-          infoType.toLowerCase() === 'vacation days' ||
-          infoType.toLowerCase() === 'vacationdays') {
-        const vacationDays = getUserVacationDays(username);
-        
-        if (vacationDays !== undefined) {
-          // Check if the request is about the current user or someone else
-          const isCurrentUser = username.toLowerCase() === currentUser.toLowerCase();
-          if (isCurrentUser) {
-            return `You have ${vacationDays} vacation days available.`;
+      switch (infoType) {
+        case InfoType.VACATION_DAYS:
+          const vacationDays = getUserVacationDays(username);
+          
+          if (vacationDays !== undefined) {
+            // Check if the request is about the current user or someone else
+            const isCurrentUser = username.toLowerCase() === currentUser.toLowerCase();
+            if (isCurrentUser) {
+              return `You have ${vacationDays} vacation days available.`;
+            } else {
+              return `${username} has ${vacationDays} vacation days available.`;
+            }
           } else {
-            return `${username} has ${vacationDays} vacation days available.`;
+            return `Sorry, I couldn't find vacation information for user ${username}.`;
           }
-        } else {
-          return `Sorry, I couldn't find vacation information for user ${username}.`;
-        }
+          
+        default:
+          return `Sorry, I don't have information about ${infoType} for user ${username}.`;
       }
-      
-      return `Sorry, I don't have information about ${infoType} for user ${username}.`;
     }
   });
 } 
