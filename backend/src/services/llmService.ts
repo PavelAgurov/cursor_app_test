@@ -2,7 +2,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { createHRPolicyTool } from "./tools/hrPolicyTool";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import dotenv from 'dotenv';
-import { SYSTEM_PROMPT } from "./prompt/prompts";
+import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG } from "./prompt/prompts";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -35,15 +35,9 @@ const model = initChatModel();
 const hrPolicyTool = createHRPolicyTool();
 const tools = [hrPolicyTool];
 
-// Create a prompt template
-const promptTemplate = ChatPromptTemplate.fromTemplate(`${SYSTEM_PROMPT}
-
-You are an assistant that can answer questions about company HR policies.
-When a user asks about company policies, rules, benefits, or procedures, always use the hr_policy_query tool to look up the information.
-If the tool doesn't return a satisfactory answer, try to rephrase the query and try again.
- 
-User question: {input}
-`);
+// Create a prompt templates
+const promptTemplateWithTools = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_WITH_TOOLS);
+const promptTemplateRAG       = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_RAG);
 
 // Create the model with tools bound to it
 const modelWithTools = model.bind({
@@ -59,14 +53,14 @@ const modelWithTools = model.bind({
 export async function processChatMessage(message: string): Promise<string> {
   try {
     // Format the prompt
-    const formattedPrompt = await promptTemplate.invoke({
+    const formattedPromptWithTools = await promptTemplateWithTools.invoke({
       input: message
     });
 
     console.log(`processChatMessage: ${message}`);
     
     // Get response from model with tools
-    const response = await modelWithTools.invoke(formattedPrompt);
+    const response = await modelWithTools.invoke(formattedPromptWithTools);
     
     if (response === null) {
       throw new Error('Received null response from model');
@@ -74,19 +68,27 @@ export async function processChatMessage(message: string): Promise<string> {
 
     console.log(`LLM Response received: ${typeof response}`);
 
-    if (response.tool_calls && response.tool_calls.length > 0){
-      console.log(`Tool calls: ${JSON.stringify(response.tool_calls)}`);
-      // If the response contains tool calls, process them
-      const toolCall = response.tool_calls[0];
-      const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
-      console.log(`Tool response: ${toolResponse}`);
-      return toolResponse;
+    // If the response does not contain tool calls, return the response directly
+    if (!response.tool_calls || response.tool_calls.length == 0){
+      console.log(`No tools needed - return answer from model`)
+      return response.text;
     }
 
-    // If the response does not contain tool calls, return the response directly
-    console.log(`No tools needed - return answer from model`)
-    return response.text;
+    console.log(`Tool calls: ${JSON.stringify(response.tool_calls)}`);
+    // If the response contains tool calls, process them
+    const toolCall = response.tool_calls[0];
+    const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
+    console.log(`Tool response: ${toolResponse}`);
+    
+    const formattedPromptRAG = await promptTemplateRAG.invoke({
+      input: message,
+      documents: toolResponse
+    });
 
+    const responseRAG = await model.invoke(formattedPromptRAG);
+    console.log(`RAG Response: ${responseRAG}`);
+
+    return responseRAG.text;
   } catch (error) {
     console.error('Error processing message with LLM:', error);
     throw new Error('Failed to process your message. Please try again later.');
