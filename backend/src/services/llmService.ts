@@ -90,56 +90,102 @@ export async function processChatMessage(message: string, username: string = 'an
     }
 
     console.log(`Tool calls: ${JSON.stringify(response.tool_calls)}`);
-    // If the response contains tool calls, process them
-    const toolCall = response.tool_calls[0];
     
-    // Handle personal info query tool
-    if (toolCall.name === "personal_info_query") {
-      const toolArgs = toolCall.args;
-      const toolResponse = await personalInfoTool.invoke({ 
-        username: toolArgs.username || username, 
-        infoType: toolArgs.infoType,
-        currentUser: username
-      });
-      console.log(`Personal info tool response: ${toolResponse}`);
-      return toolResponse;
-    }
+    // Process multiple tool calls and collect responses
+    const toolResponses: string[] = [];
+    let ragResponse = '';
     
-    // Handle vacation request tool
-    if (toolCall.name === "submit_vacation_request") {
-      const toolArgs = toolCall.args;
-      const toolResponse = await vacationRequestTool.invoke({
-        username: toolArgs.username || username,
-        startDate: toolArgs.startDate,
-        endDate: toolArgs.endDate,
-        duration: toolArgs.duration,
-        durationUnit: toolArgs.durationUnit,
-        currentUser: username
-      });
-      console.log(`Vacation request tool response: ${toolResponse}`);
-      return toolResponse;
-    }
+    // Process each tool call
+    for (const toolCall of response.tool_calls) {
+      console.log(`Processing tool call: ${toolCall.name}`);
+      console.log(`Tool call args: ${JSON.stringify(toolCall.args)}`);
     
-    // Handle HR policy tool
-    if (toolCall.name === "hr_policy_query") {
-      const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
-      console.log(`HR Policy tool response: ${toolResponse}`);
+      // Handle personal info query tool
+      if (toolCall.name === "personal_info_query") {
+        const toolArgs = toolCall.args;
+        const toolResponse = await personalInfoTool.invoke({ 
+          username: toolArgs.username || username, 
+          infoType: toolArgs.infoType,
+          currentUser: username
+        });
+        console.log(`Personal info tool response: ${toolResponse}`);
+        toolResponses.push(toolResponse);
+      }
       
-      const formattedPromptRAG = await promptTemplateRAG.invoke({
-        input: message,
-        documents: toolResponse,
-        name: username,
-        current_date: currentDate
-      });
+      // Handle vacation request tool
+      else if (toolCall.name === "submit_vacation_request") {
+        const toolArgs = toolCall.args;
+        const toolResponse = await vacationRequestTool.invoke({
+          username: toolArgs.username || username,
+          startDate: toolArgs.startDate,
+          endDate: toolArgs.endDate,
+          duration: toolArgs.duration,
+          durationUnit: toolArgs.durationUnit,
+          currentUser: username
+        });
+        console.log(`Vacation request tool response: ${toolResponse}`);
+        toolResponses.push(toolResponse);
+      }
+      
+      // Handle HR policy tool
+      else if (toolCall.name === "hr_policy_query") {
+        const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
+        console.log(`HR Policy tool response: ${toolResponse}`);
+        
+        const formattedPromptRAG = await promptTemplateRAG.invoke({
+          input: message,
+          documents: toolResponse,
+          name: username,
+          current_date: currentDate
+        });
 
-      const responseRAG = await model.invoke(formattedPromptRAG);
-      console.log(`RAG Response: ${responseRAG}`);
+        const responseRAG = await model.invoke(formattedPromptRAG);
+        console.log(`RAG Response: ${responseRAG}`);
 
-      return responseRAG.text;
+        ragResponse = responseRAG.text;
+        // For HR policy, we use RAG instead of direct tool response
+        toolResponses.push(ragResponse);
+      }
+      else {
+        // Unknown tool
+        console.log(`Unknown tool call: ${toolCall.name}`);
+        toolResponses.push(`I'm sorry, I don't know how to handle the request: ${toolCall.name}.`);
+      }
+    }
+
+    // No successful tool responses
+    if (toolResponses.length === 0) {
+      return `I'm sorry, I'm not able to process your request right now.`;
     }
     
-    // If tool not recognized
-    return `I'm sorry, I'm not able to process that request right now.`;
+    // If we only have one response, return it directly
+    if (toolResponses.length === 1) {
+      return toolResponses[0];
+    }
+    
+    // Combine multiple responses into a coherent answer
+    const combinedResponse = toolResponses.join("\n\n");
+    console.log(`Combined response from ${toolResponses.length} tool calls: ${combinedResponse}`);
+    
+    // For multiple responses, generate a summary that combines them
+    if (toolResponses.length > 1) {
+      // Create a prompt to summarize multiple tool responses
+      const summaryPrompt = await ChatPromptTemplate.fromTemplate(
+        "You are an assistant that needs to present multiple results to a user in a coherent way. " +
+        "Here are the individual results: {results}\n\n" +
+        "Combine these into a coherent, well-formatted response that addresses all parts of the user's query."
+      ).invoke({
+        results: combinedResponse
+      });
+      
+      // Get a summary response from the model
+      const summaryResponse = await model.invoke(summaryPrompt);
+      console.log(`Summary response: ${summaryResponse.text}`);
+      
+      return summaryResponse.text;
+    }
+    
+    return combinedResponse;
   } catch (error) {
     console.error('Error processing message with LLM:', error);
     throw new Error('Failed to process your message. Please try again later.');
