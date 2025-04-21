@@ -5,6 +5,7 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  isHtml?: boolean;
 }
 
 const ChatBot: React.FC = () => {
@@ -78,7 +79,8 @@ const ChatBot: React.FC = () => {
       const botMessage: Message = {
         text: response.data.message,
         isUser: false,
-        timestamp: new Date()
+        timestamp: new Date(),
+        isHtml: true // Mark that this message contains HTML
       };
       
       setMessages(prevMessages => [...prevMessages, botMessage]);
@@ -98,6 +100,24 @@ const ChatBot: React.FC = () => {
     }
   };
 
+  // Function to safely render HTML content
+  const renderMessageContent = (msg: Message) => {
+    if (msg.isHtml && !msg.isUser) {
+      return (
+        <div 
+          className="message-content"
+          dangerouslySetInnerHTML={{ __html: msg.text }}
+        />
+      );
+    }
+    
+    return (
+      <div className="message-content">
+        <p>{msg.text}</p>
+      </div>
+    );
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-messages">
@@ -106,9 +126,7 @@ const ChatBot: React.FC = () => {
             key={index} 
             className={`message ${msg.isUser ? 'user-message' : 'bot-message'}`}
           >
-            <div className="message-content">
-              <p>{msg.text}</p>
-            </div>
+            {renderMessageContent(msg)}
             <div className="message-timestamp">
               {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>

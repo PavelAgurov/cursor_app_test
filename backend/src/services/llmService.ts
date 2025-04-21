@@ -5,6 +5,7 @@ import { createVacationRequestTool } from "./tools/vacationRequestTool";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import dotenv from 'dotenv';
 import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG } from "./prompt/prompts";
+import * as marked from 'marked';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -48,6 +49,32 @@ const modelWithTools = model.bind({
   tools
 });
 
+/**
+ * Convert markdown text to HTML for better rendering in the UI
+ * @param text The markdown text to convert
+ * @returns HTML formatted string
+ */
+function markdownToHtml(text: string): string {
+  try {
+    // Use the synchronous parse function
+    const html = marked.parse(text, {
+      gfm: true,  // GitHub Flavored Markdown
+      breaks: true // Convert line breaks to <br>
+    });
+    
+    // Simple sanitization for security
+    const sanitizedHtml = String(html)
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/javascript:/gi, 'disabled-javascript:')
+      .replace(/onerror=/gi, 'data-error=')
+      .replace(/onclick=/gi, 'data-click=');
+    
+    return `<div class="markdown-content">${sanitizedHtml}</div>`;
+  } catch (error) {
+    console.error('Error converting markdown to HTML:', error);
+    return `<div class="markdown-content">${text}</div>`;
+  }
+}
 
 /**
  * Process a chat message using LangChain and the LLM
@@ -85,8 +112,8 @@ export async function processChatMessage(message: string, username: string = 'an
 
     // If the response does not contain tool calls, return the response directly
     if (!response.tool_calls || response.tool_calls.length == 0){
-      console.log(`No tools needed - return answer from model`)
-      return response.text;
+      console.log(`No tools needed - return answer from model`);
+      return markdownToHtml(response.text);
     }
 
     console.log(`Tool calls: ${JSON.stringify(response.tool_calls)}`);
@@ -155,12 +182,12 @@ export async function processChatMessage(message: string, username: string = 'an
 
     // No successful tool responses
     if (toolResponses.length === 0) {
-      return `I'm sorry, I'm not able to process your request right now.`;
+      return markdownToHtml(`I'm sorry, I'm not able to process your request right now.`);
     }
     
     // If we only have one response, return it directly
     if (toolResponses.length === 1) {
-      return toolResponses[0];
+      return markdownToHtml(toolResponses[0]);
     }
     
     // Combine multiple responses into a coherent answer
@@ -173,7 +200,8 @@ export async function processChatMessage(message: string, username: string = 'an
       const summaryPrompt = await ChatPromptTemplate.fromTemplate(
         "You are an assistant that needs to present multiple results to a user in a coherent way. " +
         "Here are the individual results: {results}\n\n" +
-        "Combine these into a coherent, well-formatted response that addresses all parts of the user's query."
+        "Combine these into a coherent, well-formatted response that addresses all parts of the user's query. " +
+        "Use Markdown formatting to make the response easy to read."
       ).invoke({
         results: combinedResponse
       });
@@ -182,10 +210,10 @@ export async function processChatMessage(message: string, username: string = 'an
       const summaryResponse = await model.invoke(summaryPrompt);
       console.log(`Summary response: ${summaryResponse.text}`);
       
-      return summaryResponse.text;
+      return markdownToHtml(summaryResponse.text);
     }
     
-    return combinedResponse;
+    return markdownToHtml(combinedResponse);
   } catch (error) {
     console.error('Error processing message with LLM:', error);
     throw new Error('Failed to process your message. Please try again later.');

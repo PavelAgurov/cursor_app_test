@@ -657,4 +657,118 @@ button[type="submit"].office-button:hover {
   text-align: center;
   color: var(--ui-dark-gray);
   font-size: var(--font-size-sm);
+}
+
+/* Markdown content styling */
+.markdown-content {
+  color: inherit;
+  line-height: 1.5;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+  color: inherit;
+}
+
+.markdown-content h1 {
+  font-size: 1.5em;
+}
+
+.markdown-content h2 {
+  font-size: 1.3em;
+}
+
+.markdown-content h3 {
+  font-size: 1.1em;
+}
+
+.markdown-content p {
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  padding-left: 1.5em;
+  margin-top: 0;
+  margin-bottom: 0.75em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.25em;
+}
+
+.markdown-content code {
+  padding: 0.2em 0.4em;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  padding: 0.5em;
+  overflow: auto;
+  margin-bottom: 0.75em;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 0.75em;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+}
+
+.markdown-content table th {
+  background-color: rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+.markdown-content hr {
+  height: 1px;
+  background-color: #ddd;
+  border: none;
+  margin: 1em 0;
+}
+
+.markdown-content blockquote {
+  padding-left: 1em;
+  margin-left: 0;
+  border-left: 4px solid #ddd;
+  color: rgba(0, 0, 0, 0.7);
+  font-style: italic;
+}
+
+.markdown-content a {
+  color: var(--odido-blue);
+  text-decoration: none;
+}
+
+.markdown-content a:hover {
+  text-decoration: underline;
+}
+
+/* Ensure bot messages with markdown have appropriate padding */
+.bot-message .markdown-content {
+  padding: 0;
 } 
