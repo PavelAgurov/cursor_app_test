@@ -65,3 +65,15 @@ User name: {name}
 
 User question: {input}
 `;
+
+/**
+ * Prompt for combining multiple tool responses into a coherent answer
+ */
+export const MULTI_RESPONSE_SUMMARY_PROMPT = `
+You are an assistant that needs to present multiple results to a user in a coherent way.
+
+Here are the individual results: {results}
+
+Combine these into a coherent, well-formatted response that addresses all parts of the user's query.
+Use Markdown formatting to make the response easy to read.
+`;

@@ -4,8 +4,8 @@ import { createPersonalInfoTool } from "./tools/personalInfoTool";
 import { createVacationRequestTool } from "./tools/vacationRequestTool";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
 import dotenv from 'dotenv';
-import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG } from "./prompt/prompts";
-import * as marked from 'marked';
+import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG, MULTI_RESPONSE_SUMMARY_PROMPT } from "./prompt/prompts";
+import { markdownToHtml, getFormattedDate } from "../utils";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -42,39 +42,13 @@ const tools = [hrPolicyTool, personalInfoTool, vacationRequestTool];
 
 // Create a prompt templates
 const promptTemplateWithTools = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_WITH_TOOLS);
-const promptTemplateRAG       = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_RAG);
+const promptTemplateRAG = ChatPromptTemplate.fromTemplate(SYSTEM_PROMPT_RAG);
+const summaryPromptTemplate = ChatPromptTemplate.fromTemplate(MULTI_RESPONSE_SUMMARY_PROMPT);
 
 // Create the model with tools bound to it
 const modelWithTools = model.bind({
   tools
 });
-
-/**
- * Convert markdown text to HTML for better rendering in the UI
- * @param text The markdown text to convert
- * @returns HTML formatted string
- */
-function markdownToHtml(text: string): string {
-  try {
-    // Use the synchronous parse function
-    const html = marked.parse(text, {
-      gfm: true,  // GitHub Flavored Markdown
-      breaks: true // Convert line breaks to <br>
-    });
-    
-    // Simple sanitization for security
-    const sanitizedHtml = String(html)
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/javascript:/gi, 'disabled-javascript:')
-      .replace(/onerror=/gi, 'data-error=')
-      .replace(/onclick=/gi, 'data-click=');
-    
-    return `<div class="markdown-content">${sanitizedHtml}</div>`;
-  } catch (error) {
-    console.error('Error converting markdown to HTML:', error);
-    return `<div class="markdown-content">${text}</div>`;
-  }
-}
 
 /**
  * Process a chat message using LangChain and the LLM
@@ -85,12 +59,7 @@ function markdownToHtml(text: string): string {
 export async function processChatMessage(message: string, username: string = 'anonymous'): Promise<string> {
   try {
     // Get current date in a readable format
-    const currentDate = new Date().toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const currentDate = getFormattedDate();
     
     // Format the prompt
     const formattedPromptWithTools = await promptTemplateWithTools.invoke({
@@ -196,13 +165,8 @@ export async function processChatMessage(message: string, username: string = 'an
     
     // For multiple responses, generate a summary that combines them
     if (toolResponses.length > 1) {
-      // Create a prompt to summarize multiple tool responses
-      const summaryPrompt = await ChatPromptTemplate.fromTemplate(
-        "You are an assistant that needs to present multiple results to a user in a coherent way. " +
-        "Here are the individual results: {results}\n\n" +
-        "Combine these into a coherent, well-formatted response that addresses all parts of the user's query. " +
-        "Use Markdown formatting to make the response easy to read."
-      ).invoke({
+      // Create a prompt to summarize multiple tool responses using the template
+      const summaryPrompt = await summaryPromptTemplate.invoke({
         results: combinedResponse
       });
       
