@@ -561,6 +561,48 @@ button[type="submit"].office-button:hover {
   overflow: hidden;
 }
 
+/* Filter controls */
+.filter-controls {
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-label {
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--odido-black);
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.filter-button {
+  background-color: #f5f5f5;
+  border: 1px solid var(--ui-gray);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 2px;
+  color: black;
+}
+
+.filter-button:hover {
+  background-color: #eaeaea;
+  color: black;
+}
+
+.filter-button.active {
+  background-color: var(--odido-black);
+  color: white;
+  border-color: var(--odido-black);
+}
+
+/* Table container */
 .table-container {
   max-height: 450px; /* Height for approximately 8 rows */
   overflow-y: auto;

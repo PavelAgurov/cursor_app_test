@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+For every change that you're working on - please make sure that corresponding detailed requirements are reflected in requirements.md file, use User Story framework, but keep it on detailed level defining every button, every interaction, every screen, every flow reflected here in a structured way.

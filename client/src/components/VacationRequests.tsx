@@ -9,10 +9,14 @@ interface VacationRequest {
   status: 'pending' | 'approved' | 'rejected';
 }
 
+type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
+
 const VacationRequests: React.FC = () => {
   const [requests, setRequests] = useState<VacationRequest[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<VacationRequest[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
 
   useEffect(() => {
     const fetchVacationRequests = async (): Promise<void> => {
@@ -32,6 +36,7 @@ const VacationRequests: React.FC = () => {
         });
         
         setRequests(response.data.requests);
+        setFilteredRequests(response.data.requests);
         setIsLoading(false);
       } catch (err: any) {
         console.error('Error fetching vacation requests:', err);
@@ -45,6 +50,15 @@ const VacationRequests: React.FC = () => {
     fetchVacationRequests();
   }, []);
 
+  // Apply the status filter whenever statusFilter or requests change
+  useEffect(() => {
+    if (statusFilter === 'all') {
+      setFilteredRequests(requests);
+    } else {
+      setFilteredRequests(requests.filter(request => request.status === statusFilter));
+    }
+  }, [statusFilter, requests]);
+
   const getStatusClass = (status: string): string => {
     switch (status) {
       case 'approved':
@@ -54,6 +68,10 @@ const VacationRequests: React.FC = () => {
       default:
         return 'status-pending';
     }
+  };
+
+  const handleFilterChange = (newFilter: StatusFilter) => {
+    setStatusFilter(newFilter);
   };
 
   if (isLoading) {
@@ -66,8 +84,41 @@ const VacationRequests: React.FC = () => {
 
   return (
     <div className="vacation-requests">
-      {requests.length === 0 ? (
-        <div className="no-requests">No vacation requests found.</div>
+      <div className="filter-controls">
+        <div className="filter-buttons">
+          <button 
+            className={`filter-button ${statusFilter === 'all' ? 'active' : ''}`}
+            onClick={() => handleFilterChange('all')}
+          >
+            All
+          </button>
+          <button 
+            className={`filter-button ${statusFilter === 'pending' ? 'active' : ''}`}
+            onClick={() => handleFilterChange('pending')}
+          >
+            Pending
+          </button>
+          <button 
+            className={`filter-button ${statusFilter === 'approved' ? 'active' : ''}`}
+            onClick={() => handleFilterChange('approved')}
+          >
+            Approved
+          </button>
+          <button 
+            className={`filter-button ${statusFilter === 'rejected' ? 'active' : ''}`}
+            onClick={() => handleFilterChange('rejected')}
+          >
+            Rejected
+          </button>
+        </div>
+      </div>
+
+      {filteredRequests.length === 0 ? (
+        <div className="no-requests">
+          {requests.length === 0 
+            ? "No vacation requests found." 
+            : `No ${statusFilter !== 'all' ? statusFilter : ''} vacation requests found.`}
+        </div>
       ) : (
         <div className="table-container">
           <table className="requests-table">
@@ -80,7 +131,7 @@ const VacationRequests: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {requests.map((request) => (
+              {filteredRequests.map((request) => (
                 <tr key={request.id}>
                   <td>{request.employeeName}</td>
                   <td>{new Date(request.startDate).toLocaleDateString()}</td>
