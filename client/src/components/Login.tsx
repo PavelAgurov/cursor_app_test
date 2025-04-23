@@ -25,16 +25,17 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
     try {
       // Send login request to backend for validation
       const response = await axios.post('/api/login', { username });
-
-      console.log(`Login response: ${response.data}`);
       
       if (response.data.success) {
-        // Store username in session storage for persistence
-        sessionStorage.setItem('username', response.data.username);
-        sessionStorage.setItem('userRole', response.data.role);
+        // Store username and role in session storage for persistence
+        sessionStorage.setItem('username', response.data.user.username);
+        sessionStorage.setItem('userRole', response.data.user.role);
         
         // Notify parent component of successful login
-        onLoginSuccess({ username: response.data.username, role: response.data.role });
+        onLoginSuccess({ 
+          username: response.data.user.username, 
+          role: response.data.user.role 
+        });
       } else {
         setError(response.data.message || 'Invalid username. Please try again.');
       }
