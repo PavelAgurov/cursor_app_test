@@ -14,7 +14,6 @@ For a detailed view of the application's architecture, please see the [architect
 │   ├── src/              # Source files
 │   │   ├── components/   # React components
 │   │   │   ├── ChatBot.tsx         # AI-powered chat interface
-│   │   │   ├── HelloButton.tsx     # Button to call backend API
 │   │   │   ├── Login.tsx           # User authentication
 │   │   │   └── VacationRequests.tsx # Vacation management (admin)
 │   │   ├── lib/          # Utility functions

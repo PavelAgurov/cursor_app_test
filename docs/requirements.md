@@ -1,6 +1,52 @@
 # Employee Portal Requirements
 
+## Data Management
+
+### User Story: Strict Data-Driven User Management
+**As a** system administrator,  
+**I want to** have all user data read exclusively from configuration files with no hardcoded fallbacks,  
+**So that** I have complete control over who can access the system.
+
+#### Acceptance Criteria:
+1. Valid usernames are read only from the backend users.yaml file
+2. No hardcoded usernames exist anywhere in the codebase
+3. If the backend is unavailable, the login page shows a clear error rather than using fallback users
+4. The login page dynamically displays available usernames from the backend
+5. Login button is disabled when no valid users are available
+6. Changes to the users.yaml file are reflected without code modifications
+7. Application includes helpful error messages when user data cannot be retrieved
+8. API endpoint is available to fetch valid usernames without authentication
+9. Documentation clearly states that user management is entirely data-driven
+
+## Code Maintenance
+
+### User Story: Code Cleanup
+**As a** developer working on the Employee Portal,  
+**I want to** remove any unused components and code,  
+**So that** the codebase remains clean, maintainable, and efficient.
+
+#### Acceptance Criteria:
+1. All unused components are identified and removed
+2. The HelloButton component has been removed as it's no longer needed
+3. No dead code or unused imports remain in the codebase
+4. Documentation is updated to reflect the current state of the application
+5. Application functionality remains intact after cleanup
+
 ## User Authentication
+
+### User Story: Secure Backend Login Validation
+**As a** system administrator,  
+**I want to** have all user validation performed on the backend,  
+**So that** user data remains secure and not exposed to the frontend.
+
+#### Acceptance Criteria:
+1. No user data or valid usernames are ever exposed to the frontend
+2. All username validation happens exclusively on the backend through a secure API endpoint
+3. The login page never displays a list of valid users
+4. Invalid login attempts receive generic error messages without indicating if a username exists
+5. Login attempts are validated by a backend `/api/login` endpoint
+6. Backend endpoint returns only success/failure status and minimal required user role information
+7. User list management remains exclusively on the backend
 
 ### User Story: Simplified Login
 **As a** portal user,  
@@ -9,10 +55,10 @@
 
 #### Acceptance Criteria:
 1. Login page only requires a username field
-2. The login form validates from a predefined list of users (john, alice, bob, admin, pva)
-3. Admin users (admin, pva) receive admin privileges upon login
-4. Regular users (john, alice, bob) receive standard user privileges
-5. Error messages clearly indicate valid username options
+2. The login form submits the username to a secure backend validation service
+3. Admin users receive admin privileges upon successful login
+4. Regular users receive standard user privileges upon successful login
+5. Error messages are generic and do not reveal valid usernames
 6. No password field is present on the login form
 
 ## Global Styling and User Experience

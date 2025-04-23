@@ -163,6 +163,21 @@ app.get('/api/users', (req: Request, res: Response) => {
   }
 });
 
+// Add a new route for public user list (doesn't require authentication)
+app.get('/api/valid-users', (req: Request, res: Response) => {
+  try {
+    // Get all users but only return their usernames and roles, no other sensitive data
+    const users = getAllUsers().map(user => ({
+      username: user.username,
+      role: user.role
+    }));
+    res.json({ users });
+  } catch (error) {
+    console.error('Error retrieving valid users:', error);
+    res.status(500).json({ error: 'Server error, please try again later' });
+  }
+});
+
 // Start server
 app.listen(PORT, (): void => {
   console.log(`Server running on port ${PORT}`);

@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 interface LoginProps {
   onLoginSuccess: (userData: { username: string; role: string }) => void;
 }
-
-type UserRoles = {
-  [key: string]: string;
-};
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent): void => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -24,32 +21,27 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       setIsLoading(false);
       return;
     }
-    
-    // Simulate API call with setTimeout
-    setTimeout(() => {
-      // Valid usernames from users.yaml: john, alice, bob, admin, pva
-      const validUsers: UserRoles = {
-        'john': 'user',
-        'alice': 'user',
-        'bob': 'user',
-        'admin': 'admin',
-        'pva': 'admin'
-      };
 
-      const lowerUsername = username.toLowerCase();
-      if (validUsers[lowerUsername]) {
-        const role = validUsers[lowerUsername];
+    try {
+      // Send login request to backend for validation
+      const response = await axios.post('/api/login', { username });
+      
+      if (response.data.success) {
         // Store username in session storage for persistence
         sessionStorage.setItem('username', username);
-        sessionStorage.setItem('userRole', role);
+        sessionStorage.setItem('userRole', response.data.role);
         
         // Notify parent component of successful login
-        onLoginSuccess({ username, role });
+        onLoginSuccess({ username, role: response.data.role });
       } else {
-        setError('Invalid username. Try john, alice, bob, admin, or pva.');
+        setError(response.data.message || 'Invalid username. Please try again.');
       }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Unable to verify login. Please try again later.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -85,7 +77,8 @@ const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       </form>
       
       <div className="login-help">
-        <strong>Available usernames:</strong> john, alice, bob, admin, pva
+        <p>Please enter your username to sign in.</p>
+        <p>If you don't have an account, contact your system administrator.</p>
       </div>
     </div>
   );
