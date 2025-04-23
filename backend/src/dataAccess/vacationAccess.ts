@@ -1,7 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import yaml from 'js-yaml';
-import { readYamlFileFromPath, writeYamlFileToPath } from './fileAccess';
+import { readYamlFile, writeYamlFile } from './fileAccess';
 
 export interface VacationRequest {
   id: number;
@@ -15,7 +12,7 @@ export interface VacationRequests {
   vacation_requests: VacationRequest[];
 }
 
-const vacation_requests_filePath = path.join(__dirname, '../../../data/vacation-requests.yaml');
+const VACATION_REQUESTS_FILE = 'vacation-requests.yaml';
 
 /**
  * Load vacation requests from YAML file
@@ -23,17 +20,7 @@ const vacation_requests_filePath = path.join(__dirname, '../../../data/vacation-
  */
 function loadVacationRequests(): VacationRequests {
   try {
-    if (!fs.existsSync(vacation_requests_filePath)) {
-      console.error('Vacation requests file not found');
-      return { vacation_requests: [] };
-    }
-    
-    // Read the file content directly each time
-    const fileContent = fs.readFileSync(vacation_requests_filePath, 'utf8');
-    console.log('Reading vacation requests directly from file');
-    
-    // Parse YAML content
-    const data = yaml.load(fileContent) as VacationRequests;
+    const data = readYamlFile<{ vacation_requests: VacationRequest[] }>(VACATION_REQUESTS_FILE);
     
     // Ensure the data structure is valid
     if (!data || !data.vacation_requests || !Array.isArray(data.vacation_requests)) {
@@ -55,7 +42,7 @@ function loadVacationRequests(): VacationRequests {
  * @returns Success status
  */
 function saveVacationRequests(requests: VacationRequests): boolean {
-  return writeYamlFileToPath(vacation_requests_filePath, requests);
+  return writeYamlFile(VACATION_REQUESTS_FILE, requests);
 }
 
 /**

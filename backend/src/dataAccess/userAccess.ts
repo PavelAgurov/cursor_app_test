@@ -5,12 +5,14 @@ export interface User {
   role: 'admin' | 'user';
 }
 
+const USERS_FILE = 'users.yaml';
+
 /**
  * Gets all user records
  * @returns Array of user objects
  */
 export function getAllUsers(): User[] {
-  const data = readYamlFile<{ users: User[] }>('users.yaml');
+  const data = readYamlFile<{ users: User[] }>(USERS_FILE);
   return data.users;
 }
 
@@ -31,7 +33,7 @@ export function getUserByUsername(username: string): User | undefined {
  * @returns true if successful, false if user already exists
  */
 export function addUser(username: string, role: 'admin' | 'user' = 'user'): boolean {
-  const data = readYamlFile<{ users: User[] }>('users.yaml');
+  const data = readYamlFile<{ users: User[] }>(USERS_FILE);
   
   // Check if user already exists
   if (data.users.some(user => user.username.toLowerCase() === username.toLowerCase())) {
@@ -43,7 +45,6 @@ export function addUser(username: string, role: 'admin' | 'user' = 'user'): bool
     username: username.toLowerCase(),
     role
   });
-  writeYamlFile('users.yaml', data);
-  return true;
+  return writeYamlFile(USERS_FILE, data);
 }
 
