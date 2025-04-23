@@ -249,38 +249,19 @@ button[type="submit"].office-button:hover {
   font-size: var(--font-size-sm);
 }
 
-/* Odido Ribbon-like header */
-.ribbon {
-  background-color: var(--odido-black);
-  color: white;
-  padding: 14px 0;
-  margin-bottom: 30px;
-}
-
-.ribbon-title {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 20px;
-  display: flex;
-  align-items: center;
-}
-
-.ribbon-title h1 {
-  margin: 0;
-  color: white;
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-  letter-spacing: 0.2px;
-}
-
 /* Card layout */
 .card {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  padding: 20px;
+  padding: 0;
   margin-bottom: 20px;
   border: 1px solid #eaeaea;
+  overflow: hidden;
+}
+
+.card > *:not(.card-header) {
+  padding: 0 20px 20px;
 }
 
 .card-title {
@@ -301,26 +282,33 @@ button[type="submit"].office-button:hover {
   margin-bottom: 15px;
   border-bottom: 1px solid #eaeaea;
   padding-bottom: 10px;
+  background-color: #FFCE7D;
+  border-radius: 8px 8px 0 0;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .card-header .card-title {
   margin: 0;
   padding: 0;
   border: none;
+  color: black;
 }
 
 .back-button {
-  background-color: #f5f5f5;
-  color: var(--odido-black);
+  background-color: white;
+  color: black;
   font-size: var(--font-size-xs);
   padding: 6px 12px;
   border-radius: 30px;
-  box-shadow: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   text-transform: uppercase;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 .back-button:hover {
-  background-color: #e8e8e8;
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
 }
 
 /* Action buttons grid */
@@ -385,9 +373,10 @@ button[type="submit"].office-button:hover {
   max-height: 80vh;
   background-color: white;
   border: 1px solid #eaeaea;
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
+  margin: 0;
 }
 
 .chat-messages {
@@ -438,7 +427,7 @@ button[type="submit"].office-button:hover {
 
 .user-message {
   align-self: flex-end;
-  background-color: var(--odido-pink);
+  background-color: #FFAE7C;
   color: white;
   border-radius: 18px 18px 0 18px;
   margin-left: 20%;
@@ -446,13 +435,12 @@ button[type="submit"].office-button:hover {
 
 .bot-message {
   align-self: flex-start;
-  background-color: white;
+  background-color: #EEF3FF;
   color: var(--odido-black);
   border-radius: 18px 18px 18px 0;
-  border: 1px solid #eaeaea;
+  border: 1px solid #e0e0e0;
   margin-right: 20%;
   margin-top: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .message-content {
@@ -494,20 +482,21 @@ button[type="submit"].office-button:hover {
 }
 
 .send-button {
-  background-color: var(--odido-pink);
+  background-color: #FFAE7C;
   color: white;
   border: none;
   border-radius: 25px;
   padding: 8px 16px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
   min-width: 80px;
   font-weight: 600;
   letter-spacing: 0.3px;
 }
 
 .send-button:hover {
-  background-color: #e03570;
+  background-color: #ff9c61;
+  transform: translateY(-2px);
 }
 
 .send-button:disabled {
@@ -530,7 +519,7 @@ button[type="submit"].office-button:hover {
   width: 8px;
   float: left;
   margin: 0 1px;
-  background-color: var(--odido-pink);
+  background-color: #FFAE7C;
   display: block;
   border-radius: 50%;
   opacity: 0.4;
@@ -556,8 +545,8 @@ button[type="submit"].office-button:hover {
 
 /* Vacation requests component */
 .vacation-requests {
-  padding: 10px 0;
-  max-height: 400px;
+  padding: 20px 0;
+  max-height: 450px;
   overflow: hidden;
 }
 
@@ -581,34 +570,38 @@ button[type="submit"].office-button:hover {
 
 .filter-button {
   background-color: #f5f5f5;
-  border: 1px solid var(--ui-gray);
+  border: 1px solid #e0e0e0;
   border-radius: 20px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-left: 2px;
   color: black;
+  font-weight: 500;
 }
 
 .filter-button:hover {
-  background-color: #eaeaea;
-  color: black;
+  background-color: #eeeeee;
+  transform: translateY(-1px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .filter-button.active {
-  background-color: var(--odido-black);
+  background-color: #FFAE7C;
   color: white;
-  border-color: var(--odido-black);
+  border-color: #FFAE7C;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Table container */
 .table-container {
   max-height: 450px; /* Height for approximately 8 rows */
   overflow-y: auto;
-  border-radius: 8px;
+  border-radius: 0 0 8px 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   scrollbar-width: thin;
+  border: 1px solid #eaeaea;
 }
 
 .table-container::-webkit-scrollbar {
@@ -637,8 +630,8 @@ button[type="submit"].office-button:hover {
 }
 
 .requests-table th {
-  background-color: var(--odido-black);
-  color: white;
+  background-color: #FFCE7D;
+  color: black;
   font-weight: 600;
   text-align: left;
   padding: 12px 15px;
@@ -653,8 +646,13 @@ button[type="submit"].office-button:hover {
   color: var(--odido-black);
 }
 
+.requests-table tr {
+  transition: background-color 0.2s ease;
+  cursor: default;
+}
+
 .requests-table tr:hover {
-  background-color: #f8f8f8;
+  background-color: #f0f7ff;
 }
 
 .status-badge {
@@ -665,6 +663,11 @@ button[type="submit"].office-button:hover {
   display: inline-block;
   font-weight: 600;
   letter-spacing: 0.2px;
+  transition: transform 0.2s ease;
+}
+
+.status-badge:hover {
+  transform: scale(1.05);
 }
 
 .status-approved {
@@ -675,13 +678,13 @@ button[type="submit"].office-button:hover {
 
 .status-rejected {
   background-color: #fce8e6;
-  color: var(--odido-pink);
+  color: #FF3F7F;
   border: 1px solid #f8dad6;
 }
 
 .status-pending {
   background-color: #fff7e0;
-  color: var(--odido-orange);
+  color: #FF9100;
   border: 1px solid #feefc3;
 }
 
@@ -813,4 +816,288 @@ button[type="submit"].office-button:hover {
 /* Ensure bot messages with markdown have appropriate padding */
 .bot-message .markdown-content {
   padding: 0;
+}
+
+/* Dashboard wrapper styles */
+.dashboard-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #f5f5f5;
+  z-index: 100;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  transform: translateZ(0);
+  will-change: transform;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  perspective: 1000;
+  -webkit-perspective: 1000;
+}
+
+.dashboard-back-button {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 101;
+  background-color: #FFCE7D;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+/* Dashboard styles integrated into App */
+.dashboard-active {
+  max-width: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+.dashboard-active .card {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-active .card .chat-container {
+  height: calc(100vh - 82px);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.dashboard-active .card .vacation-requests {
+  max-height: none;
+  padding-bottom: 40px;
+}
+
+.dashboard-active .card .table-container {
+  max-height: calc(100vh - 162px);
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.dashboard-view {
+  position: relative;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #FFCE7D;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-menu-container {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.dashboard-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-profile {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.dashboard-logout {
+  font-size: var(--font-size-xs);
+  padding: 8px 12px;
+}
+
+.dashboard-welcome {
+  padding: 16px;
+  margin: 0 auto;
+  max-width: 600px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dashboard-welcome p {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.dashboard-content {
+  padding: 0 16px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  flex-grow: 1;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto 80px auto; /* Added bottom margin to ensure space for the chat button */
+  width: 100%;
+}
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #EEF3FF;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  box-sizing: border-box;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.dashboard-card:hover, .dashboard-card:focus {
+  transform: translateZ(0) translateY(-4px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card:active {
+  transform: translateZ(0) translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card-icon {
+  margin-bottom: 12px;
+  color: #4285F4;
+}
+
+.dashboard-card-title {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.dashboard-card-description {
+  margin: 0;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.chatbot-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background-color: #FFAE7C;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  z-index: 10;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.chatbot-button:hover {
+  transform: scale(1.05) translateZ(0);
+}
+
+/* For smaller screens */
+@media (max-width: 600px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .dashboard-actions {
+    gap: 8px;
+  }
+  
+  .dashboard-logout {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .card-header {
+    padding: 12px;
+  }
+  
+  .card-header .card-title {
+    font-size: 16px;
+  }
+  
+  .back-button {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+}
+
+/* Animation for chat messages */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.user-message, .bot-message {
+  animation: fadeInUp 0.3s ease forwards;
+}
+
+.message-form input {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.message-form input:focus {
+  border-color: #FFAE7C;
+  box-shadow: 0 0 0 2px rgba(255, 174, 124, 0.2);
+  outline: none;
 } 

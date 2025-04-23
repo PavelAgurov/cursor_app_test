@@ -1,80 +1,91 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
-interface UserData {
-  username: string;
-  role: string;
-}
 
 interface LoginProps {
-  onLoginSuccess: (userData: UserData) => void;
+  onLoginSuccess: (userData: { username: string; role: string }) => void;
 }
+
+type UserRoles = {
+  [key: string]: string;
+};
 
 const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [username, setUsername] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
-    try {
-      const response = await axios.post('/api/login', { username });
-      
-      if (response.data.success) {
-        // Store user data in sessionStorage for simple auth state
-        const userData: UserData = response.data.user;
-        sessionStorage.setItem('username', userData.username);
-        sessionStorage.setItem('userRole', userData.role);
-        onLoginSuccess(userData);
-      } else {
-        setError('Login failed');
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Username does not exist');
-    } finally {
+    
+    // Basic validation
+    if (!username.trim()) {
+      setError('Please enter your username.');
       setIsLoading(false);
+      return;
     }
+    
+    // Simulate API call with setTimeout
+    setTimeout(() => {
+      // Valid usernames from users.yaml: john, alice, bob, admin, pva
+      const validUsers: UserRoles = {
+        'john': 'user',
+        'alice': 'user',
+        'bob': 'user',
+        'admin': 'admin',
+        'pva': 'admin'
+      };
+
+      const lowerUsername = username.toLowerCase();
+      if (validUsers[lowerUsername]) {
+        const role = validUsers[lowerUsername];
+        // Store username in session storage for persistence
+        sessionStorage.setItem('username', username);
+        sessionStorage.setItem('userRole', role);
+        
+        // Notify parent component of successful login
+        onLoginSuccess({ username, role });
+      } else {
+        setError('Invalid username. Try john, alice, bob, admin, or pva.');
+      }
+      setIsLoading(false);
+    }, 1000);
   };
 
   return (
     <div className="login-container">
-      <h3 className="card-title">Sign in to Employee Portal</h3>
-      
       <div className="login-intro">
-        <p>Experience the joy of taking part in our community.</p>
+        <h1>Employee Portal</h1>
+        <p>Please sign in to access your account.</p>
       </div>
       
       {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="username">Username:</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
             id="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            required
-            disabled={isLoading}
             placeholder="Enter your username"
-            autoComplete="off"
+            disabled={isLoading}
+            autoFocus
           />
         </div>
         
         <button 
           type="submit" 
+          className="office-button" 
           disabled={isLoading}
-          className="office-button"
         >
-          {isLoading ? 'Signing in...' : 'Sign In'}
+          {isLoading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
       
       <div className="login-help">
-        <p>Available usernames: john, alice, bob, admin, pva</p>
+        <strong>Available usernames:</strong> john, alice, bob, admin, pva
       </div>
     </div>
   );
