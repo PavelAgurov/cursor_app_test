@@ -27,15 +27,3 @@ export function markdownToHtml(text: string): string {
   }
 }
 
-/**
- * Creates a formatted date string in a readable format
- * @returns Current date in a readable format
- */
-export function getFormattedDate(): string {
-  return new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-} 

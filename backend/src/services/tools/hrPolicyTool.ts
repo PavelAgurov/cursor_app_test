@@ -1,16 +1,9 @@
 import { z } from "zod";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import fs from 'fs';
-import path from 'path';
-import { parse } from 'csv-parse/sync';
 import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { Document } from "@langchain/core/documents";
-
-interface HRPolicy {
-  topic: string;
-  text: string;
-}
+import { HRPolicy, loadHRPolicyData } from '../../dataAccess/hrPolicyAccess';
 
 const DEFAULT_HR_POLICY = "Sorry, I couldn't find specific information about that in our HR policies. Please try asking in a different way or contact HR for more information.";
 
@@ -42,34 +35,6 @@ async function safelyInitializeEmbeddings(): Promise<boolean> {
 safelyInitializeEmbeddings().catch(err => {
   console.error("Error during embeddings initialization:", err);
 });
-
-/**
- * Load HR policy data from CSV file
- * @returns Array of HR policies
- */
-function loadHRPolicyData(): HRPolicy[] {
-  try {
-    let filePath = path.join(__dirname, '../../../data/hr_general_data.csv');
-    if (!fs.existsSync(filePath)) {
-      console.error('HR policy data file not found');
-      return [];
-    }
-    
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    
-    // Parse CSV data
-    const records = parse(fileContent, {
-      columns: true,
-      skip_empty_lines: true
-    });
-    
-    console.log(`Loaded ${records.length} HR policies`);
-    return records as HRPolicy[];
-  } catch (error) {
-    console.error('Error loading HR policy data:', error);
-    return [];
-  }
-}
 
 /**
  * Initialize vector store with policy documents

@@ -1,8 +1,11 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { getUserByUsername, getAllUsers, getVacationRequests, addUser, isUserAdmin } from './services/dataService';
+
+import { isAuthorized } from './services/authService';
 import { processChatMessage } from './services/llmService';
+import { getUserByUsername, getAllUsers, addUser } from './dataAccess/userAccess';
+import { getAllVacationRequests } from './dataAccess/vacationAccess';
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +36,8 @@ app.post('/api/login', (req: Request, res: Response) => {
   try {
     // Check if user exists
     const user = getUserByUsername(username);
+
+    console.log(`User found: ${user?.username} with role ${user?.role}`);
     
     if (user) {
       res.json({ 
@@ -125,13 +130,13 @@ app.get('/api/vacation-requests', (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Invalid user' });
     }
     
-    // Check admin role instead of specific usernames
-    if (user.role !== 'admin') {
+    // Use generic isAuthorized function to check admin privileges
+    if (!isAuthorized(username, 'admin', 'view_vacation_requests')) {
       return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
     }
     
     // Get vacation requests directly from the file
-    const vacationRequests = getVacationRequests();
+    const vacationRequests = getAllVacationRequests();
     res.json({ requests: vacationRequests });
   } catch (error) {
     console.error('Error validating admin access:', error);
@@ -149,8 +154,8 @@ app.get('/api/users', (req: Request, res: Response) => {
   }
   
   try {
-    // Check if user has admin role
-    if (!isUserAdmin(username)) {
+    // Use generic isAuthorized function to check admin privileges
+    if (!isAuthorized(username, 'admin', 'view_users')) {
       return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
     }
     

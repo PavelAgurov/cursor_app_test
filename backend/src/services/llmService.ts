@@ -1,10 +1,14 @@
+import dotenv from 'dotenv';
+
 import { ChatOpenAI } from "@langchain/openai";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+
 import { createHRPolicyTool } from "./tools/hrPolicyTool";
 import { createPersonalInfoTool } from "./tools/personalInfoTool";
 import { createVacationRequestTool } from "./tools/vacationRequestTool";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
-import dotenv from 'dotenv';
+
 import { SYSTEM_PROMPT_WITH_TOOLS, SYSTEM_PROMPT_RAG, MULTI_RESPONSE_SUMMARY_PROMPT } from "./prompt/prompts";
+
 import { markdownToHtml, getFormattedDate } from "../utils";
 
 // Load environment variables from .env file
@@ -65,7 +69,10 @@ export async function processChatMessage(message: string, username: string = 'an
     const formattedPromptWithTools = await promptTemplateWithTools.invoke({
       input: message,
       name: username,
-      current_date: currentDate
+      current_date: currentDate,
+      hr_policy_tool_name: hrPolicyTool.name,
+      personal_info_tool_name: personalInfoTool.name,
+      vacation_request_tool_name: vacationRequestTool.name
     });
 
     console.log(`processChatMessage from ${username}: ${message}`);
@@ -98,7 +105,7 @@ export async function processChatMessage(message: string, username: string = 'an
       console.log(`Tool call args: ${JSON.stringify(toolCall.args)}`);
     
       // Handle personal info query tool
-      if (toolCall.name === "personal_info_query") {
+      if (toolCall.name === personalInfoTool.name) {
         const toolArgs = toolCall.args;
         const toolResponse = await personalInfoTool.invoke({ 
           username: toolArgs.username || username, 
@@ -111,7 +118,7 @@ export async function processChatMessage(message: string, username: string = 'an
       }
       
       // Handle vacation request tool
-      else if (toolCall.name === "submit_vacation_request") {
+      else if (toolCall.name === vacationRequestTool.name) {
         const toolArgs = toolCall.args;
         const toolResponse = await vacationRequestTool.invoke({
           username: toolArgs.username || username,
@@ -127,7 +134,7 @@ export async function processChatMessage(message: string, username: string = 'an
       }
       
       // Handle HR policy tool
-      else if (toolCall.name === "hr_policy_query") {
+      else if (toolCall.name === hrPolicyTool.name) {
         const toolResponse = await hrPolicyTool.invoke({ query: toolCall.args.query });
         console.log(`HR Policy tool response: ${toolResponse}`);
         

@@ -18,7 +18,69 @@
 8. API endpoint is available to fetch valid usernames without authentication
 9. Documentation clearly states that user management is entirely data-driven
 
+## Code Architecture
+
+### User Story: Data Access Layer
+**As a** developer maintaining the Employee Portal,  
+**I want to** have a dedicated data access layer with specialized services,  
+**So that** data operations are properly organized following separation of concerns.
+
+#### Acceptance Criteria:
+1. Data access functionality is separated into specialized modules by entity type
+2. A fileAccess module provides generic file operations used by other data services
+3. A userAccess module handles all user data operations
+4. A vacationAccess module handles all vacation request operations
+5. A hrPolicyAccess module handles all HR policy data operations
+6. A vacationDaysAccess module handles all employee vacation days data operations
+7. The dataService acts as a facade, re-exporting from specialized modules
+8. Existing code continues to work through the dataService facade
+9. Related data operations are grouped together in their respective modules
+10. Each module has a clear, single responsibility
+11. Tool files no longer contain data access logic
+12. Each data type has its own dedicated access module
+
+### User Story: Modular Utility Functions
+**As a** developer maintaining the Employee Portal,  
+**I want to** organize utility functions into dedicated modules by functionality,  
+**So that** common code is reusable, testable, and follows the single responsibility principle.
+
+#### Acceptance Criteria:
+1. Date-related utility functions are organized in a utils/dateUtils module
+2. Date calculation functions are extracted from tool files
+3. Date validation functions are available for reuse across the application
+4. Utility modules export focused, single-purpose functions
+5. Naming conventions clearly indicate the purpose of each utility function
+6. Tool files import utility functions rather than implementing their own
+7. Utility functions are easily testable in isolation
+
+### User Story: Centralized Authorization Service
+**As a** developer maintaining the Employee Portal,  
+**I want to** have a centralized authorization service,  
+**So that** all access control logic is consistent and follows the single responsibility principle.
+
+#### Acceptance Criteria:
+1. All authorization logic is extracted into a dedicated authService module
+2. Authorization functions follow a consistent pattern and naming convention
+3. Tool files only contain logic specific to their individual functionality 
+4. No duplicated authorization logic across different tool files
+5. isAuthorizedToView and isAuthorizedToSubmit functions are centralized
+6. Server endpoints use the centralized auth service for permission checks
+7. The authService has a direct dependency only on the dataService for user role verification
+
 ## Code Maintenance
+
+### User Story: Code Reusability and DRY Principle
+**As a** developer maintaining the Employee Portal,  
+**I want to** follow the DRY (Don't Repeat Yourself) principle,  
+**So that** the codebase is more maintainable, with less duplication and easier updates.
+
+#### Acceptance Criteria:
+1. Common functions are extracted to shared utility files
+2. The isUserAdmin function is centralized in dataService.ts and imported where needed
+3. No duplicated implementations of the same functionality
+4. Authentication and authorization logic is consistent across the application
+5. Changes to permission logic only need to be made in one place
+6. All tool files import utility functions rather than reimplementing them
 
 ### User Story: Code Cleanup
 **As a** developer working on the Employee Portal,  

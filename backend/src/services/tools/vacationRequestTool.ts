@@ -1,149 +1,9 @@
 import { z } from "zod";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import fs from 'fs';
-import path from 'path';
-import { parse, stringify } from 'yaml';
-import { getUserByUsername } from '../dataService';
-
-interface VacationRequest {
-  id: number;
-  employeeName: string;
-  startDate: string;
-  endDate: string;
-  status: 'pending' | 'approved' | 'rejected';
-}
-
-interface VacationRequests {
-  vacation_requests: VacationRequest[];
-}
-
-/**
- * Check if a user has admin privileges
- * @param username The username to check
- * @returns True if the user is an admin, false otherwise
- */
-function isUserAdmin(username: string): boolean {
-  try {
-    const user = getUserByUsername(username);
-    return user?.role === 'admin';
-  } catch (error) {
-    console.error(`Error checking admin status for user ${username}:`, error);
-    return false;
-  }
-}
-
-/**
- * Check if a user is authorized to submit a vacation request for another user
- * @param currentUser The user making the request
- * @param targetUser The user for whom the vacation request is being submitted
- * @returns True if access is allowed, false otherwise
- */
-function isAuthorizedToSubmit(currentUser: string, targetUser: string): boolean {
-  // Users can always submit their own vacation requests
-  if (currentUser.toLowerCase() === targetUser.toLowerCase()) {
-    return true;
-  }
-  
-  // Only admins can submit vacation requests for other users
-  return isUserAdmin(currentUser);
-}
-
-/**
- * Calculate end date based on start date and duration
- * @param startDate The start date of the vacation
- * @param duration The duration of the vacation
- * @param unit The unit of duration (days, weeks, etc.)
- * @returns The end date as a string in YYYY-MM-DD format
- */
-function calculateEndDate(startDate: string, duration: number, unit: string): string {
-  const start = new Date(startDate);
-  const end = new Date(start);
-  
-  switch (unit.toLowerCase()) {
-    case 'day':
-    case 'days':
-      end.setDate(start.getDate() + duration - 1); // -1 because the start day counts as a vacation day
-      break;
-    case 'week':
-    case 'weeks':
-      end.setDate(start.getDate() + duration * 7 - 1);
-      break;
-    case 'month':
-    case 'months':
-      end.setMonth(start.getMonth() + duration);
-      end.setDate(end.getDate() - 1);
-      break;
-    default:
-      // Default to days if unit is not recognized
-      end.setDate(start.getDate() + duration - 1);
-  }
-  
-  return end.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-}
-
-/**
- * Load vacation requests from YAML file
- * @returns Vacation requests object
- */
-function loadVacationRequests(): VacationRequests {
-  try {
-    const filePath = path.join(__dirname, '../../../data/vacation-requests.yaml');
-    if (!fs.existsSync(filePath)) {
-      console.error('Vacation requests file not found');
-      return { vacation_requests: [] };
-    }
-    
-    // Read the file content directly each time
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    console.log('Reading vacation requests directly from file');
-    
-    // Parse YAML content
-    const data = parse(fileContent) as VacationRequests;
-    
-    // Ensure the data structure is valid
-    if (!data || !data.vacation_requests || !Array.isArray(data.vacation_requests)) {
-      console.error('Invalid vacation requests data structure');
-      return { vacation_requests: [] };
-    }
-    
-    console.log(`Loaded ${data.vacation_requests.length} vacation requests from file`);
-    return data;
-  } catch (error) {
-    console.error('Error loading vacation requests:', error);
-    return { vacation_requests: [] };
-  }
-}
-
-/**
- * Save vacation requests to YAML file
- * @param requests Vacation requests object
- * @returns Success status
- */
-function saveVacationRequests(requests: VacationRequests): boolean {
-  try {
-    const filePath = path.join(__dirname, '../../../data/vacation-requests.yaml');
-    const yamlContent = stringify(requests);
-    fs.writeFileSync(filePath, yamlContent, 'utf8');
-    return true;
-  } catch (error) {
-    console.error('Error saving vacation requests:', error);
-    return false;
-  }
-}
-
-/**
- * Get the next available ID for a new vacation request
- * @param requests Existing vacation requests
- * @returns The next available ID
- */
-function getNextId(requests: VacationRequest[]): number {
-  if (requests.length === 0) {
-    return 1;
-  }
-  
-  const maxId = Math.max(...requests.map(req => req.id));
-  return maxId + 1;
-}
+import { isAuthorizedToSubmit } from '../authService';
+import { calculateEndDate, isValidDateFormat, isValidDateRange } from '../../utils/dateUtils';
+import { getUserByUsername } from '../../dataAccess/userAccess';
+import { createNewVacationRequest } from '../../dataAccess/vacationAccess';
 
 /**
  * Creates a tool for submitting vacation requests
@@ -169,7 +29,7 @@ export function createVacationRequestTool() {
       console.log(`Vacation Request Tool: User ${currentUser} is submitting a vacation request for ${username}`);
       
       // Validate date format
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(startDate)) {
+      if (!isValidDateFormat(startDate)) {
         return `Invalid start date format. Please use YYYY-MM-DD format (e.g., 2023-06-15).`;
       }
       
@@ -182,12 +42,12 @@ export function createVacationRequestTool() {
       }
       
       // Check if the end date format is valid
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(finalEndDate)) {
+      if (!isValidDateFormat(finalEndDate)) {
         return `Invalid end date format. Please use YYYY-MM-DD format (e.g., 2023-06-22).`;
       }
       
       // Check if end date is after start date
-      if (new Date(finalEndDate) < new Date(startDate)) {
+      if (!isValidDateRange(startDate, finalEndDate)) {
         return `The end date must be after the start date.`;
       }
       
@@ -200,23 +60,8 @@ export function createVacationRequestTool() {
       const user = getUserByUsername(username);
       const employeeName = user ? user.username : username; // In a real system, you'd use the user's full name
       
-      // Load existing vacation requests
-      const vacationRequests = loadVacationRequests();
-      
-      // Create a new vacation request
-      const newRequest: VacationRequest = {
-        id: getNextId(vacationRequests.vacation_requests),
-        employeeName,
-        startDate,
-        endDate: finalEndDate,
-        status: 'pending'
-      };
-      
-      // Add the new request
-      vacationRequests.vacation_requests.push(newRequest);
-      
-      // Save the updated vacation requests
-      const saveSuccess = saveVacationRequests(vacationRequests);
+      // Create and save the new vacation request
+      const saveSuccess = createNewVacationRequest(employeeName, startDate, finalEndDate);
       
       if (saveSuccess) {
         return `Vacation request for ${username} from ${startDate} to ${finalEndDate} has been submitted successfully. Status: pending`;
@@ -227,11 +72,3 @@ export function createVacationRequestTool() {
   });
 }
 
-/**
- * Get all vacation requests
- * @returns Array of vacation requests
- */
-export function getAllVacationRequests(): VacationRequest[] {
-  const data = loadVacationRequests();
-  return data.vacation_requests;
-} 

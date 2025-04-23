@@ -1,94 +1,11 @@
 import { z } from "zod";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import fs from 'fs';
-import path from 'path';
-import { parse } from 'csv-parse/sync';
-import { getUserByUsername } from '../dataService';
+import { isAuthorizedToView } from "../authService";
+import { getUserVacationDays } from "../../dataAccess/vacationDaysAccess";
 
 // Define an enum for the supported information types
 enum InfoType {
   VACATION_DAYS = "vacation_days"
-}
-
-interface UserVacationData {
-  username: string;
-  vacation_days: number;
-}
-
-/**
- * Check if a user has admin privileges
- * @param username The username to check
- * @returns True if the user is an admin, false otherwise
- */
-function isUserAdmin(username: string): boolean {
-  try {
-    const user = getUserByUsername(username);
-    return user?.role === 'admin';
-  } catch (error) {
-    console.error(`Error checking admin status for user ${username}:`, error);
-    return false;
-  }
-}
-
-/**
- * Check if a user is authorized to view another user's information
- * @param currentUser The user making the request
- * @param targetUser The user whose information is being requested
- * @returns True if access is allowed, false otherwise
- */
-function isAuthorizedToView(currentUser: string, targetUser: string): boolean {
-  // Users can always view their own information
-  if (currentUser.toLowerCase() === targetUser.toLowerCase()) {
-    return true;
-  }
-  
-  // Only admins can view other users' information
-  return isUserAdmin(currentUser);
-}
-
-/**
- * Load user vacation data from CSV file
- * @returns Array of user vacation data
- */
-function loadVacationData(): UserVacationData[] {
-  try {
-    let filePath = path.join(__dirname, '../../../data/vacation-days.csv');
-    if (!fs.existsSync(filePath)) {
-      console.error('Vacation days data file not found');
-      return [];
-    }
-    
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    
-    // Parse CSV data
-    const records = parse(fileContent, {
-      columns: true,
-      skip_empty_lines: true
-    });
-    
-    // Convert vacation_days from string to number
-    const vacationData = records.map((record: any) => ({
-      username: record.username,
-      vacation_days: parseInt(record.vacation_days)
-    }));
-    
-    console.log(`Loaded vacation data for ${vacationData.length} users`);
-    return vacationData;
-  } catch (error) {
-    console.error('Error loading vacation data:', error);
-    return [];
-  }
-}
-
-/**
- * Get user's vacation days
- * @param username The username to look up
- * @returns The number of vacation days for the user, or undefined if not found
- */
-function getUserVacationDays(username: string): number | undefined {
-  const vacationData = loadVacationData();
-  const userRecord = vacationData.find(user => user.username.toLowerCase() === username.toLowerCase());
-  return userRecord?.vacation_days;
 }
 
 /**
